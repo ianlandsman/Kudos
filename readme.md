@@ -2,7 +2,7 @@
 
 ### Disclaimer
 
-I built this to run ianlandsman.com over a weekend :) It may not work for you. I'm posting it up in case anyone else may find it useful. It might also be useful to those interested in working with the PHP Laravel framework.
+I built this to run [ianlandsman.com](http://ianlandsman.com) over a weekend :) It may not work for you. I'm posting it up in case anyone else may find it useful. It might also be useful to those interested in working with the PHP Laravel framework.
 
 ### Installation
 
