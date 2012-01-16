@@ -1,0 +1,15 @@
+<?php defined('APP_PATH') or die('No direct script access.'); ?>
+
+<?php if ($draft): ?>
+	<div class="draft">
+	This article is a <strong>draft</strong>. Do not link to this URL.
+	</div>
+<?php endif; ?>
+
+<article class="article">
+	<?php echo $body; ?>
+</article>
+
+<nav id="article_about_me">
+	<?php echo helpers::markdown(Config::get('kudos.about_me')); ?>
+</nav>

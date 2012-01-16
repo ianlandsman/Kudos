@@ -1,0 +1,108 @@
+body 
+{
+	width: 550px;
+	margin: 0 auto;
+	font: 100%/1.5 'Open Sans', "Helvetica Neue", Helvetica, Tahoma, Arial, sans-serif;
+}
+
+body header
+{
+	margin: 0;
+	margin-bottom: 40px;
+	padding: 0.4em 0.7em;
+	background-color: #E12300;
+}
+
+header a
+{
+	color: #fff;
+	font-weight: normal;
+	font-size: 150%;
+	text-decoration: none;	
+}
+
+h2.home
+{
+	margin-top: 40px;
+}
+
+h2.home:after 
+{ 
+	content: " ::";
+}
+
+h1 a:after
+{
+	content: " ⇒";
+}
+
+ul
+{
+	list-style: disc;
+	margin-left: 35px;
+}
+
+ul li
+{	
+	margin-bottom: 4px;	
+}
+
+ul.clean
+{
+	list-style: none;
+	margin-left: 0;
+}
+
+p
+{
+	margin-bottom: 1em;
+}
+
+body header h1 a
+{
+	color: #fff;
+	text-decoration: none;
+}
+
+body header h1 a:hover
+{
+	text-decoration: underline;
+}
+
+.date
+{
+	color: #aaa;
+}
+
+.article h1
+{
+	font-size: 140%;
+	margin-bottom: 1em;
+}
+
+.article h2, .article h3
+{
+	font-size: 120%;
+	margin-bottom: 1em;	
+}
+
+footer
+{
+	margin-top: 40px;
+	margin-bottom: 20px;	
+}
+
+.draft
+{
+	padding: 10px;
+	color: #000;
+	background-color: yellow;
+	margin-bottom: 40px;
+}
+
+#article_about_me
+{
+	border-top: 1px solid #E12300;
+	margin-top: 20px;
+	padding-top: 20px;
+}
