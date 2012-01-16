@@ -19,7 +19,7 @@ If you want to use this with Dropbox you can also set the content folder path to
 * publish
 * published
 
-__Note, the /storage/cache, /content/publish, /content/published folders needs to be writable __
+__Note, the /storage/cache, /content/publish, /content/published folders needs to be writable__
 
 ### Article/Page format
 
