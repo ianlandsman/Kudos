@@ -31,7 +31,10 @@
 	
 	<footer>
 		
-		<p><small>&copy; Copyright {{date('Y')}}. All Rights Reserved.</small></p>
+		<p>
+			<small>&copy; Copyright {{date('Y')}}. All Rights Reserved.</small> 
+			<small>Powered by <a href="https://github.com/ianlandsman/Kudos">Kudos</a></small>
+		</p>
 		
 	</footer>
 

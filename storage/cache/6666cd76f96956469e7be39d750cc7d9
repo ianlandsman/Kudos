@@ -1,4 +1,4 @@
-1326734184s:5705:"
+1326747893s:5776:"
 <!doctype html>
 <head>
 	<meta charset="utf-8">
@@ -135,7 +135,8 @@
 	
 	<footer>
 		
-		<p><small>&copy; Copyright 2012. All Rights Reserved.</small></p>
+		<p><small>&copy; Copyright 2012. All Rights Reserved.</small> 
+		Powered by <a href="https://github.com/ianlandsman/Kudos">Kudos</a></p>
 		
 	</footer>
 
