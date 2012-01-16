@@ -38,3 +38,5 @@ When you're ready to publish simply put the article in the content/publish folde
 Kudos caches every URL for 10 minutes. If you need to clear the cache manually you can use:
 
     php artisan Kudos:clear_cache
+
+Currently Kudos doesn't handle media. I'd recommend just using public dropbox folder as a simple solution.
