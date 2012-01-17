@@ -3,7 +3,7 @@
 <?php echo '<?xml version="1.0" encoding="utf-8"?>'; ?>
 <rss version="2.0">
   <channel>
-    <title>{{Config::get('kudos.site_name')}}</title>
+    <title>{{e(Config::get('kudos.site_name'))}}</title>
     <link>{{URL::to()}}</link>
     <description></description>
     <copyright>{{URL::to()}}</copyright>
@@ -11,9 +11,9 @@
 
     @foreach ($articles AS $article)
 	    <item>
-	      <title>{{$article['title']}}</title>
+	      <title>{{e($article['title'])}}</title>
 	      <description>
-	      {{helpers::markdown_file($article['path'])}}
+	      {{e(helpers::markdown_file($article['path']))}}
 	      </description>
 	      <link>{{$article['link']}}</link>
 	      <guid isPermaLink="true">{{$article['link']}}</guid>
