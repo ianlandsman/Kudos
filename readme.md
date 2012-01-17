@@ -37,6 +37,11 @@ You can keep articles you're working on in the content/drafts folder. You can pr
 
 When you're ready to publish simply put the article in the content/publish folder. When the publishing task runs it will move it to the published folder and date stamp it.
 
+### Potential issues
+
+* Make sure you upload the .htaccess file in /public to your web server. If not using apache or you dont' want clean URL's then you'll need to add index.php back in for the setting in /application/config/application.php (index setting)
+* Make sure the follwoing folders are writable: /storage/* (all), /content/publish, /content/published
+
 ### Other Stuff
 
 Kudos caches every URL for 10 minutes. If you need to clear the cache manually you can use:
