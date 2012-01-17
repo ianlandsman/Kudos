@@ -36,50 +36,54 @@ class helpers {
 		// Get all the articles
 		$articles = glob(Config::get('kudos.content_path')."/published/*.markdown");
 
-		// Sort them newest to oldest
-		rsort($articles);
+		if($articles){
+			// Sort them newest to oldest
+			rsort($articles);
 
-		// Limit to the number required
-		if( $count != '*') $articles = array_slice($articles, 0, $count);
+			// Limit to the number required
+			if( $count != '*') $articles = array_slice($articles, 0, $count);
 
-		// Create the article detail array
-		return array_map(function($path)
-		{
-			// Get path parts
-			$parts = pathinfo($path);
+			// Create the article detail array
+			return array_map(function($path)
+			{
+				// Get path parts
+				$parts = pathinfo($path);
 
-			// Find just the date
-			$date = substr($parts['filename'], 0, 8);
+				// Find just the date
+				$date = substr($parts['filename'], 0, 8);
 
-			return array(
-					'path'	=> $path,
-					'year'	=> $year = substr($date, 0, 4),
-					'month' => $month = substr($date, 4, 2),
-					'day'	=> $day = substr($date, 6, 2),
-					'title' => trim(helpers::unslug(substr($parts['filename'], 8))),
-					'link'	=> URL::to() . $year.'/'.$month.'/'.$day.'/'.ltrim(substr($parts['filename'], 8),'-'),
-				);
-		}, $articles);
+				return array(
+						'path'	=> $path,
+						'year'	=> $year = substr($date, 0, 4),
+						'month' => $month = substr($date, 4, 2),
+						'day'	=> $day = substr($date, 6, 2),
+						'title' => trim(helpers::unslug(substr($parts['filename'], 8))),
+						'link'	=> URL::to() . $year.'/'.$month.'/'.$day.'/'.ltrim(substr($parts['filename'], 8),'-'),
+					);
+			}, $articles);
+		}
 	}
 
 	public static function pages(){
 		// Get all the articles
 		$pages = glob(Config::get('kudos.content_path')."/pages/*.markdown");
 
-		// Sort them newest to oldest
-		sort($pages);
+		if($pages){
+			// Sort them newest to oldest
+			sort($pages);
 
-		// Create the article detail array
-		return array_map(function($path)
-		{
-			// Get path parts
-			$parts = pathinfo($path);
+			// Create the article detail array
+			return array_map(function($path)
+			{
+				// Get path parts
+				$parts = pathinfo($path);
 
-			return array(
-					'path'	=> $path,
-					'title' => trim(helpers::unslug($parts['filename'])),
-					'link'	=> URL::to() . 'page/'.$parts['filename'],
-				);
-		}, $pages);
+				return array(
+						'path'	=> $path,
+						'title' => trim(helpers::unslug($parts['filename'])),
+						'link'	=> URL::to() . 'page/'.$parts['filename'],
+					);
+			}, $pages);
+		}
 	}	
 }

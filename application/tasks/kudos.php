@@ -14,13 +14,17 @@ class Kudos_task {
 		// Assign the current date to the filename 
 		$date = date('Ymd');
 
-		foreach (glob(Config::get('kudos.content_path')."/publish/*.markdown") as $draft) 
-		{
-			rename($draft, str_replace('content/publish/', "content/published/{$date}-", $draft));
-		}
+		$articles = glob(Config::get('kudos.content_path')."/publish/*.markdown");
+		
+		if($articles){
+			foreach ($articles as $draft) 
+			{
+				rename($draft, str_replace('content/publish/', "content/published/{$date}-", $draft));
+			}
 
-		// Clear the homepage cache so the articles appear right away
-		Cache::forget(md5('/'));
+			// Clear the homepage cache so the articles appear right away
+			Cache::forget(md5('/'));			
+		}
 	}
 
 	/**
