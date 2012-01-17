@@ -74,6 +74,8 @@ Router::register('GET /archive', function()
 */
 Router::register('GET /rss', function()
 {
+	header("Content-Type: application/rss+xml");
+	
 	return View::make('rss')->with('articles', helpers::articles(20));
 });
 
