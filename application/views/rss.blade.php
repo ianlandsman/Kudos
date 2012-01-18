@@ -11,7 +11,7 @@
 
     @foreach ($articles AS $article)
 	    <item>
-	      <title>{{e($article['title'])}}</title>
+	      <title>{{e(Str::title($article['title']))}}</title>
 	      <description>
 	      {{e(helpers::markdown_file($article['path']))}}
 	      </description>
