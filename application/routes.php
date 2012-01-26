@@ -12,11 +12,11 @@ Router::register('GET /', function()
 * Handle the article URL's which are YYYY/MM/DD/Title
 */
 Router::register('GET /(:any)/(:any)/(:any)/(:any)', function($year=false,$month=false,$day=false,$article=false)
-{ 
+{     
 	if($article && file_exists($path = Config::get('kudos.content_path')."/published/{$year}{$month}{$day}-{$article}.markdown"))
 	{
 		return View::make('layout', array('title' => helpers::unslug($article) . ' :: '))
-					->nest('body', 'partials.article', array('body'=>helpers::markdown_file($path)));
+					->nest('body', 'partials.article', array('body'=>helpers::markdown_file($path), 'comments' => helpers::get_disqus_html()));
 	}
 
 	return Response::error('404');

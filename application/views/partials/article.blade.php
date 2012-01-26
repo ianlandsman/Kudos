@@ -10,6 +10,14 @@
 	{{$body}}
 </article>
 
+<article class="comments">
+    @if ($comments)
+    
+    {{@$comments}}
+    
+    @endif
+</article>
+
 <nav id="article_about_me">
 	{{helpers::markdown(Config::get('kudos.about_me'))}}
 </nav>
