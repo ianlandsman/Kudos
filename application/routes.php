@@ -85,12 +85,12 @@ Router::register('GET /rss', function()
 */
 Filter::register('before', function()
 {
-//	$key = md5(URI::current());
-//
-//	if(Cache::has($key)) 
-//	{
-//		return Cache::get($key);
-//	}
+	$key = md5(URI::current());
+
+	if(Cache::has($key)) 
+	{
+		return Cache::get($key);
+	}
 });
 
 /**
@@ -99,5 +99,5 @@ Filter::register('before', function()
 */
 Filter::register('after', function($response)
 {
-//	Cache::put(md5(URI::current()), $response->content, 10);
+	Cache::put(md5(URI::current()), $response->content, 10);
 });
