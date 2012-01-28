@@ -106,3 +106,9 @@ footer
 	margin-top: 20px;
 	padding-top: 20px;
 }
+
+article #disqus_thread{
+	border-top: 1px solid #ccc;
+	margin-top: 20px;
+	padding-top: 20px;	
+}

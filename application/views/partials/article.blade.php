@@ -8,6 +8,10 @@
 
 <article class="article">
 	{{$body}}
+
+	@if (Config::get('kudos.disqus_shortname'))
+		{{View::make('partials.disqus')}}
+	@endif
 </article>
 
 <nav id="article_about_me">
