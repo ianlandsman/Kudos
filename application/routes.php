@@ -102,5 +102,13 @@ Filter::register('before', function()
 */
 Filter::register('after', function($response)
 {
-	if(Config::get('kudos.cache')) Cache::put(md5(URI::current()), $response->content, 10);
+	if(Config::get('kudos.cache'))
+	{
+		$key = md5(URI::current());
+
+		if( ! Cache::has($key)) 
+		{		
+			Cache::put($key, $response->content, 10);
+		}
+	}
 });
