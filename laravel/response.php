@@ -103,7 +103,7 @@ class Response {
 	 *		return Response::make('Not Found', 404);
 	 *
 	 *		// Create a response with some custom headers
-	 *		return Respone::make(json_encode($user), 200, array('header' => 'value'));
+	 *		return Response::make(json_encode($user), 200, array('header' => 'value'));
 	 * </code>
 	 *
 	 * @param  mixed     $content
@@ -157,7 +157,7 @@ class Response {
 	 */
 	public static function error($code, $data = array())
 	{
-		return new static(View::make('error/'.$code, $data), $code);
+		return new static(View::make('error.'.$code, $data), $code);
 	}
 
 	/**
@@ -205,7 +205,10 @@ class Response {
 	 */
 	public static function prepare($response)
 	{
-		if ( ! $response instanceof Response) $response = new static($response);
+		if ( ! $response instanceof Response)
+		{
+			$response = new static($response);
+		}
 
 		// We'll need to force the response to be a string before closing the session,
 		// since the developer may be using the session within a view, and we can't
@@ -214,9 +217,28 @@ class Response {
 		// Since this method is used by both the Route and Controller classes, it is
 		// a convenient spot to cast the application response to a string before it
 		// is returned to the main request handler.
-		$response->content = (string) $response->content;
+		$response->render();
 
 		return $response;
+	}
+
+	/**
+	 * Convert the content of the Response to a string and return it.
+	 *
+	 * @return string
+	 */
+	public function render()
+	{
+		if (is_object($this->content) and method_exists($this->content, '__toString'))
+		{
+			$this->content = $this->content->__toString();
+		}
+		else
+		{
+			$this->content = (string) $this->content;
+		}
+
+		return $this->content;
 	}
 
 	/**
@@ -266,7 +288,7 @@ class Response {
 
 		// Once the framework controlled headers have been sentm, we can
 		// simply iterate over the developer's headers and send each one
-		// to the browser. Headers with the same name will be overriden.
+		// back to the browser for the response.
 		foreach ($this->headers as $name => $value)
 		{
 			header("{$name}: {$value}", true);

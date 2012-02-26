@@ -71,10 +71,10 @@ class Paginator {
 	 * Create a new Paginator instance.
 	 *
 	 * @param  array  $results
-	 * @param  int    $last
 	 * @param  int    $page
 	 * @param  int    $total
 	 * @param  int    $per_page
+	 * @param  int    $last
 	 * @return void
 	 */
 	protected function __construct($results, $page, $total, $per_page, $last)
@@ -246,6 +246,7 @@ class Paginator {
 	 *		echo $paginator->previous('Go Back');
 	 * </code>
 	 *
+	 * @param  string  $text
 	 * @return string
 	 */
 	public function previous($text = null)
@@ -266,6 +267,7 @@ class Paginator {
 	 *		echo $paginator->next('Skip Forwards');
 	 * </code>
 	 *
+	 * @param  string  $text
 	 * @return string
 	 */
 	public function next($text = null)
@@ -364,7 +366,7 @@ class Paginator {
 	 *
 	 * @param  int     $page
 	 * @param  string  $text
-	 * @param  string  $attributes
+	 * @param  string  $class
 	 * @return string
 	 */
 	protected function link($page, $text, $class)
@@ -375,17 +377,16 @@ class Paginator {
 	}
 
 	/**
-	 * Create the "appendage" that should be attached to every pagination link.
-	 *
-	 * The developer may assign an array of values that will be converted to a
-	 * query string and attached to every pagination link. This allows simple
-	 * implementation of sorting or other things the developer may need.
+	 * Create the "appendage" to be attached to every pagination link.
 	 *
 	 * @param  array   $appends
 	 * @return string
 	 */
 	protected function appendage($appends)
 	{
+	 	// The developer may assign an array of values that will be converted to a
+	 	// query string and attached to every pagination link. This allows simple
+	 	// implementation of sorting or other things the developer may need.
 		if ( ! is_null($this->appendage)) return $this->appendage;
 
 		if (count($appends) <= 0)

@@ -1,4 +1,4 @@
-<?php defined('APP_PATH') or die('No direct script access.'); ?>
+<?php defined('DS') or die('No direct script access.'); ?>
 
 <section>
 	<div id='disqus_thread'></div>

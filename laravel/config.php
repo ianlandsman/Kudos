@@ -1,4 +1,4 @@
-<?php namespace Laravel; defined('APP_PATH') or die('No direct script access.');
+<?php namespace Laravel; defined('DS') or die('No direct script access.');
 
 use Closure;
 
@@ -14,11 +14,11 @@ class Config {
 	public static $items = array();
 
 	/**
-	 * A cache of the loaded configuration items.
+	 * A cache of the parsed configuration items.
 	 *
 	 * @var array
 	 */
-	protected static $cache = array();
+	public static $cache = array();
 
 	/**
 	 * Determine if a configuration item or file exists.
@@ -60,14 +60,6 @@ class Config {
 	 */
 	public static function get($key)
 	{
-		// First, we'll check the keyed cache of configuration items, as this will
-		// be the fastest method of retrieving the configuration option. After an
-		// item is retrieved, it is always stored in the cache by its key.
-		if (array_key_exists($key, static::$cache))
-		{
-			return static::$cache[$key];
-		}
-
 		list($bundle, $file, $item) = static::parse($key);
 
 		if ( ! static::load($bundle, $file)) return;
@@ -77,9 +69,14 @@ class Config {
 		// If a specific configuration item was not requested, the key will be null,
 		// meaning we need to return the entire array of configuration item from the
 		// requested configuration file. Otherwise we can return the item.
-		$value = (is_null($item)) ? $items : array_get($items, $item);
-
-		return static::$cache[$key] = $value;
+		if (is_null($item))
+		{
+			return $items;
+		}
+		else
+		{
+			return array_get($items, $item);
+		}
 	}
 
 	/**
@@ -102,7 +99,22 @@ class Config {
 	 */
 	public static function set($key, $value)
 	{
-		static::$cache[$key] = $value;
+		list($bundle, $file, $item) = static::parse($key);
+
+		static::load($bundle, $file);
+
+		// If the item is null, it means the developer wishes to set the entire
+		// configuration array to a given value, so we will pass the entire
+		// array for the bundle into the array_set method, otherwise we'll
+		// only pass the file array for the bundle.
+		if (is_null($item))
+		{
+			array_set(static::$items[$bundle], $file, $value);
+		}
+		else
+		{
+			array_set(static::$items[$bundle][$file], $item, $value);
+		}
 	}
 
 	/**
@@ -115,21 +127,31 @@ class Config {
 	 */
 	protected static function parse($key)
 	{
+		// First, we'll check the keyed cache of configuration items, as this will
+		// be the fastest method of retrieving the configuration option. After an
+		// item is parsed, it is always stored in the cache by its key.
+		if (array_key_exists($key, static::$cache))
+		{
+			return static::$cache[$key];
+		}
+
 		$bundle = Bundle::name($key);
 
 		$segments = explode('.', Bundle::element($key));
 
 		// If there are not at least two segments in the array, it means that the
 		// developer is requesting the entire configuration array to be returned.
-		// If that is the case, we'll make the item field of the array "null".
+		// If that is the case, we'll make the item field "null".
 		if (count($segments) >= 2)
 		{
-			return array($bundle, $segments[0], implode('.', array_slice($segments, 1)));
+			$parsed = array($bundle, $segments[0], implode('.', array_slice($segments, 1)));
 		}
 		else
 		{
-			return array($bundle, $segments[0], null);
+			$parsed = array($bundle, $segments[0], null);
 		}
+
+		return static::$cache[$key] = $parsed;
 	}
 
 	/**
@@ -177,10 +199,6 @@ class Config {
 		// Configuration files can be made specific for a given environment. If an
 		// environment has been set, we will merge the environment configuration
 		// in last, so that it overrides all other options.
-		//
-		// This allows the developer to quickly and easily create configurations
-		// for various scenarios, such as local development and production,
-		// without constantly changing configuration files.
 		if (isset($_SERVER['LARAVEL_ENV']))
 		{
 			$paths[] = $paths[count($paths) - 1].$_SERVER['LARAVEL_ENV'].'/';

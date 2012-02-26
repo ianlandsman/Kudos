@@ -1,13 +1,15 @@
-<?php namespace Laravel; defined('APP_PATH') or die('No direct script access.');
+<?php namespace Laravel; defined('DS') or die('No direct script access.');
 
 use Closure;
 
-if (trim(Config::get('application.key')) === '')
-{
-	throw new \Exception('The cookie class may not be used without an application key.');
-}
-
 class Cookie {
+
+	/**
+	 * The cookies that have been set.
+	 *
+	 * @var array
+	 */
+	public static $jar = array();
 
 	/**
 	 * Determine if a cookie exists.
@@ -21,13 +23,56 @@ class Cookie {
 	}
 
 	/**
+	 * Send all of the cookies to the browser.
+	 *
+	 * @return void
+	 */
+	public static function send()
+	{
+		if (headers_sent()) return false;
+
+		// All cookies are stored in the "jar" when set and not sent directly to the
+		// browser. This simply makes testing all of the cookie stuff very easy
+		// since the jar can be inspected by the tests.
+		foreach (static::$jar as $cookie)
+		{
+			static::set($cookie);
+		}
+	}
+
+	/**
+	 * Send a cookie from the cookie jar back to the browser.
+	 *
+	 * @param  array  $cookie
+	 * @return void
+	 */
+	protected static function set($cookie)
+	{
+		extract($cookie);
+
+		$time = ($minutes !== 0) ? time() + ($minutes * 60) : 0;
+
+		// A cookie payload can't exceed 4096 bytes, so if the payload is greater
+		// than that, we'll raise an error to warn the developer since it could
+		// cause serious cookie-based session problems.
+		$value = static::sign($name, $value);
+
+		if (strlen($value) > 4000)
+		{
+			throw new \Exception("Payload too large for cookie.");
+		}
+
+		setcookie($name, $value, $time, $path, $domain, $secure);
+	}
+
+	/**
 	 * Get the value of a cookie.
 	 *
 	 * <code>
 	 *		// Get the value of the "favorite" cookie
 	 *		$favorite = Cookie::get('favorite');
 	 *
-	 *		// Get the value of a cookie or return a default value if it doesn't exist
+	 *		// Get the value of a cookie or return a default value 
 	 *		$favorite = Cookie::get('framework', 'Laravel');
 	 * </code>
 	 *
@@ -37,6 +82,8 @@ class Cookie {
 	 */
 	public static function get($name, $default = null)
 	{
+		if (isset(static::$jar[$name])) return static::$jar[$name]['value'];
+
 		$value = array_get($_COOKIE, $name);
 
 		if ( ! is_null($value) and isset($value[40]) and $value[40] == '~')
@@ -45,9 +92,9 @@ class Cookie {
 			// character for convenience. To separate the hash and the contents
 			// we can simply expode on that character.
 			//
-			// By re-feeding the cookie value into the "sign" method, we should
-			// be able to generate a hash that matches the one taken out of the
-			// cookie. If they don't match, the cookie value has been changed.
+			// By re-feeding the cookie value into the "sign" method we should
+			// be able to generate a hash that matches the one taken from the
+			// cookie. If they don't, the cookie value has been changed.
 			list($hash, $value) = explode('~', $value, 2);
 
 			if (static::hash($name, $value) === $hash)
@@ -61,8 +108,6 @@ class Cookie {
 
 	/**
 	 * Set the value of a cookie.
-	 *
-	 * If the response headers have already been sent, the cookie will not be set.
 	 *
 	 * <code>
 	 *		// Set the value of the "favorite" cookie
@@ -78,15 +123,11 @@ class Cookie {
 	 * @param  string  $path
 	 * @param  string  $domain
 	 * @param  bool    $secure
-	 * @return bool
+	 * @return void
 	 */
 	public static function put($name, $value, $minutes = 0, $path = '/', $domain = null, $secure = false)
 	{
-		if (headers_sent()) return false;
-
-		$time = ($minutes !== 0) ? time() + ($minutes * 60) : 0;
-
-		return setcookie($name, static::sign($name, $value), $time, $path, $domain, $secure);
+		static::$jar[$name] = compact('name', 'value', 'minutes', 'path', 'domain', 'secure');
 	}
 
 	/**
@@ -116,7 +157,7 @@ class Cookie {
 	 * @param  string  $value
 	 * @return string
 	 */
-	protected static function sign($name, $value)
+	public static function sign($name, $value)
 	{
 		return static::hash($name, $value).'~'.$value;
 	}

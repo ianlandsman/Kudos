@@ -1,4 +1,4 @@
-<?php namespace Laravel; defined('APP_PATH') or die('No direct script access.');
+<?php namespace Laravel; defined('DS') or die('No direct script access.');
 
 class Autoloader {
 
@@ -10,18 +10,25 @@ class Autoloader {
 	public static $mappings = array();
 
 	/**
+	 * The directories that use the PSR-0 naming convention.
+	 *
+	 * @var array
+	 */
+	public static $directories = array();
+
+	/**
+	 * The mappings for namespaces to directories.
+	 *
+	 * @var array
+	 */
+	public static $namespaces = array();
+
+	/**
 	 * All of the class aliases registered with the auto-loader.
 	 *
 	 * @var array
 	 */
 	public static $aliases = array();
-
-	/**
-	 * The directories that use the PSR-0 naming convention.
-	 *
-	 * @var array
-	 */
-	public static $psr = array();
 
 	/**
 	 * Load the file corresponding to a given class.
@@ -35,7 +42,7 @@ class Autoloader {
 	{
 		// First, we will check to see if the class has been aliased. If it has,
 		// we will register the alias, which may cause the auto-loader to be
-		// called again for the "real" class name.
+		// called again for the "real" class name to load its file.
 		if (isset(static::$aliases[$class]))
 		{
 			class_alias(static::$aliases[$class], $class);
@@ -49,27 +56,14 @@ class Autoloader {
 			require static::$mappings[$class];
 		}
 
-		// If the class is namespaced to an existing bundle and the bundle has
-		// not been started, we will start the bundle and attempt to load the
-		// class file again. If that fails, an error will be thrown by PHP.
-		//
-		// This allows bundle classes to be loaded by the auto-loader before
-		// their class mappings have actually been registered; however, it
-		// is up to the bundle developer to namespace their classes to
-		// match the name of their bundle.
-		elseif (($slash = strpos($class, '\\')) !== false)
+		// If the class namespace is mapped to a directory, we will load the
+		// class using the PSR-0 standards from that directory accounting
+		// for the root of the namespace by trimming it.
+		if ( ! is_null($info = static::namespaced($class)))
 		{
-			$bundle = substr($class, 0, $slash);
+			$class = substr($class, strlen($info['namespace']));
 
-			// It's very important that we make sure the bundle has not been
-			// started here. If we don't, we'll end up in an infinite loop
-			// attempting to load a bundle's class.
-			if (Bundle::exists($bundle) and ! Bundle::started($bundle))
-			{
-				Bundle::start($bundle);
-
-				static::load($class);
-			}
+			return static::load_psr($class, $info['directory']);
 		}
 
 		static::load_psr($class);
@@ -79,21 +73,26 @@ class Autoloader {
 	 * Attempt to resolve a class using the PSR-0 standard.
 	 *
 	 * @param  string  $class
+	 * @param  string  $directory
 	 * @return void
 	 */
-	protected static function load_psr($class)
+	protected static function load_psr($class, $directory = null)
 	{
-		// The PSR-0 standard indicates that class namespace slashes or
-		// underscores should be used to indicate the directory tree in
-		// which the class resides.
+		// The PSR-0 standard indicates that class namespaces and underscores
+		// shoould be used to indcate the directory tree in which the class
+		// resides, so we'll convert them to slashes.
 		$file = str_replace(array('\\', '_'), '/', $class);
 
-		// Once we have formatted the class name, we will simply spin
-		// through the registered PSR-0 directories and attempt to
-		// locate and load the class into the script.
-		foreach (static::$psr as $directory)
+		$directories = $directory ?: static::$directories;
+
+		$lower = strtolower($file);
+
+		// Once we have formatted the class name, we'll simply spin through
+		// the registered PSR-0 directories and attempt to locate and load
+		// the class file into the script.
+		foreach ((array) $directories as $directory)
 		{
-			if (file_exists($path = $directory.strtolower($file).EXT))
+			if (file_exists($path = $directory.$lower.EXT))
 			{
 				return require $path;
 			}
@@ -105,12 +104,24 @@ class Autoloader {
 	}
 
 	/**
-	 * Register an array of class to path mappings.
+	 * Get the directory for a given namespaced class.
 	 *
-	 * <code>
-	 *		// Register a class mapping with the Autoloader
-	 *		Autoloader::map(array('User' => APP_PATH.'models/user.php'));
-	 * </code>
+	 * @param  string  $class
+	 * @return string
+	 */
+	protected static function namespaced($class)
+	{
+		foreach (static::$namespaces as $namespace => $directory)
+		{
+			if (starts_with($class, $namespace))
+			{
+				return compact('namespace', 'directory');
+			}
+		}
+	}
+
+	/**
+	 * Register an array of class to path mappings.
 	 *
 	 * @param  array  $mappings
 	 * @return void
@@ -138,15 +149,65 @@ class Autoloader {
 	 * @param  string|array  $directory
 	 * @return void
 	 */
-	public static function psr($directory)
+	public static function directories($directory)
 	{
-		$directories = array_map(function($directory)
+		$directories = static::format($directory);
+
+		static::$directories = array_unique(array_merge(static::$directories, $directories));
+	}
+
+	/**
+	 * Register underscored "namespaces" to directory mappings.
+	 *
+	 * @param  array  $mappings
+	 * @return void
+	 */
+	public static function underscored($mappings)
+	{
+		static::namespaces($mappings, '_');
+	}
+
+	/**
+	 * Map namespaces to directories.
+	 *
+	 * @param  array   $mappings
+	 * @param  string  $append
+	 * @return void
+	 */
+	public static function namespaces($mappings, $append = '\\')
+	{
+		foreach ($mappings as $namespace => $directory)
 		{
-			return rtrim($directory, '/').'/';
+			// When adding new namespaces to the mappings, we will unset the previously
+			// mapped value if it existed. This allows previously registered spaces to
+			// be mapped to new directories on the fly.
+			$namespace = trim($namespace, $append).$append;
 
-		}, (array) $directory);
+			unset(static::$namespaces[$namespace]);
 
-		static::$psr = array_merge(static::$psr, $directories);
+			$namespaces[$namespace] = head(static::format($directory));
+		}
+
+		// We'll array_merge the new mappings onto the front of the array so
+		// derivative namespaces are not always shadowed by their parents.
+		// For instance, when mappings Laravel\Docs, we don't want the
+		// main Laravel namespace to always override it.
+		static::$namespaces = array_merge($namespaces, static::$namespaces);
+	}
+
+	/**
+	 * Format an array of directories with the proper trailing slashes.
+	 *
+	 * @param  array  $directories
+	 * @return array
+	 */
+	protected static function format($directories)
+	{
+		return array_map(function($directory)
+		{
+			return rtrim($directory, DS).DS;
+		
+		}, (array) $directories);
 	}
 
 }

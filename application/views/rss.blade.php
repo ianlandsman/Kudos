@@ -1,4 +1,4 @@
-<?php defined('APP_PATH') or die('No direct script access.'); ?>
+<?php defined('DS') or die('No direct script access.'); ?>
 
 <?php echo '<?xml version="1.0" encoding="utf-8"?>'; ?>
 <rss version="2.0">
@@ -13,7 +13,7 @@
 	    <item>
 	      <title>{{e(Str::title($article['title']))}}</title>
 	      <description>
-	      {{e(helpers::markdown_file($article['path']))}}
+	      {{helpers::markdown_file($article['path'])}}
 	      </description>
 	      <link>{{$article['link']}}</link>
 	      <guid isPermaLink="true">{{$article['link']}}</guid>

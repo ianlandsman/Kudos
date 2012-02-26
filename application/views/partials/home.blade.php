@@ -1,4 +1,4 @@
-<?php defined('APP_PATH') or die('No direct script access.'); ?>
+<?php defined('DS') or die('No direct script access.'); ?>
 
 <article id="small_about_me">
 	{{helpers::markdown(Config::get('kudos.about_me'))}}

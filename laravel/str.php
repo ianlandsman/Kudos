@@ -124,6 +124,34 @@ class Str {
 	}
 
 	/**
+	 * Limit the number of words in a string.
+	 *
+	 * <code>
+	 *		// Returns "This is a..."
+	 *		echo Str::words('This is a sentence.', 3);
+	 *
+	 *		// Limit the number of words and append a custom ending
+	 *		echo Str::words('This is a sentence.', 3, '---');
+	 * </code>
+	 *
+	 * @param  string  $value
+	 * @param  int     $words
+	 * @param  string  $end
+	 * @return string
+	 */
+	public static function words($value, $words = 100, $end = '...')
+	{
+		preg_match('/^\s*+(?:\S++\s*+){1,'.$words.'}/', $value, $matches);
+
+		if (static::length($value) == static::length($matches[0]))
+		{
+			$end = '';
+		}
+
+		return rtrim($matches[0]).$end;
+	}
+
+	/**
 	 * Get the singular form of the given word.
 	 *
 	 * The word should be defined in the "strings" configuration file.
@@ -133,7 +161,11 @@ class Str {
 	 */
 	public static function singular($value)
 	{
-		return array_get(array_flip(Config::get('strings.inflection')), strtolower($value), $value);
+		$inflection = Config::get('strings.inflection');
+
+		$singular = array_get(array_flip($inflection), strtolower($value), $value);
+
+		return (ctype_upper($value[0])) ? static::title($singular) : $singular;
 	}
 
 	/**
@@ -150,41 +182,16 @@ class Str {
 	 * </code>
 	 *
 	 * @param  string  $value
+	 * @param  int     $count
 	 * @return string
 	 */
 	public static function plural($value, $count = 2)
 	{
 		if ((int) $count == 1) return $value;
 
-		return array_get(Config::get('strings.inflection'), strtolower($value), $value);
-	}
+		$plural = array_get(Config::get('strings.inflection'), strtolower($value), $value);
 
-	/**
-	 * Limit the number of words in a string.
-	 *
-	 * <code>
-	 *		// Returns "This is a..."
-	 *		echo Str::words('This is a sentence.', 3);
-	 *
-	 *		// Limit the number of words and append a custom ending
-	 *		echo Str::words('This is a sentence.', 3, '---');
-	 * </code>
-	 *
-	 * @param  string  $value
-	 * @param  int     $length
-	 * @param  string  $end
-	 * @return string
-	 */
-	public static function words($value, $words = 100, $end = '...')
-	{
-		preg_match('/^\s*+(?:\S++\s*+){1,'.$words.'}/', $value, $matches);
-
-		if (static::length($value) == static::length($matches[0]))
-		{
-			$end = '';
-		}
-
-		return rtrim($matches[0]).$end;
+		return (ctype_upper($value[0])) ? static::title($plural) : $plural;
 	}
 
 	/**
@@ -250,7 +257,20 @@ class Str {
 	 */
 	public static function classify($value)
 	{
-		return str_replace(' ', '_', static::title(str_replace(array('_', '.'), ' ', $value)));
+		$search = array('_', '-', '.');
+
+		return str_replace(' ', '_', static::title(str_replace($search, ' ', $value)));
+	}
+
+	/**
+	 * Return the "URI" style segments in a given string.
+	 *
+	 * @param  string  $value
+	 * @return array
+	 */
+	public static function segments($value)
+	{
+		return array_diff(explode('/', trim($value, '/')), array(''));
 	}
 
 	/**

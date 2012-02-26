@@ -17,13 +17,6 @@ class Auth {
 	const user_key = 'laravel_user_id';
 
 	/**
-	 * The key used when setting the "remember me" cookie.
-	 *
-	 * @var string
-	 */
-	const remember_key = 'laravel_remember';
-
-	/**
 	 * Determine if the user of the application is not logged in.
 	 *
 	 * This method is the inverse of the "check" method.
@@ -76,7 +69,7 @@ class Auth {
 		// exists, we'll attempt to recall the user based on the cookie value.
 		// Since all cookies contain a fingerprint hash verifying that they
 		// haven't changed, we can trust it.
-		$recaller = Cookie::get(Auth::remember_key);
+		$recaller = Cookie::get($config['cookie']);
 
 		if (is_null(static::$user) and ! is_null($recaller))
 		{
@@ -94,9 +87,6 @@ class Auth {
 	 */
 	protected static function recall($recaller)
 	{
-		// When the remember me cookie is stored, it is encrypted and contains
-		// the user's ID and a long, random string. The segments are separated
-		// by a pipe character so we'll explode on that.
 		$recaller = explode('|', Crypter::decrypt($recaller));
 
 		// We'll pass the ID that was stored in the cookie into the same user
@@ -134,16 +124,10 @@ class Auth {
 
 		// When attempting to login the user, we will call the "attempt" closure
 		// from the configuration file. This gives the developer the freedom to
-		// authenticate based on the needs of their application.
-		//
-		// All of the password hashing and checking and left totally up to the
-		// developer, as this gives them the freedom to use any hashing scheme
-		// or authentication provider they wish.
+		// authenticate based on the needs of their application, even allowing
+		// the user of third-party providers.
 		$user = call_user_func($config['attempt'], $username, $password);
 
-		// If the user credentials were authenticated by the closure, we will
-		// log the user into the application, which will store their user ID
-		// in the session for subsequent requests.
 		if (is_null($user)) return false;
 
 		static::login($user, $remember);
@@ -190,13 +174,15 @@ class Auth {
 
 		// This method assumes the "remember me" cookie should have the same
 		// configuration as the session cookie. Since this cookie, like the
-		// session cookie, should be kept very secure, it's probably safe
-		// to assume the settings are the same for this cookie.
+		// session cookie, should be kept very secure, it's probably safe.
+		// to assume the cookie settings are the same.
 		$config = Config::get('session');
 
 		extract($config, EXTR_SKIP);
 
-		Cookie::forever(Auth::remember_key, $recaller, $path, $domain, $secure);
+		$cookie = Config::get('auth.cookie');
+
+		Cookie::forever($cookie, $recaller, $path, $domain, $secure);
 	}
 
 	/**
@@ -220,7 +206,9 @@ class Auth {
 		// When forgetting the cookie, we need to also pass in the path and
 		// domain that would have been used when the cookie was originally
 		// set by the framework, otherwise it will not be deleted.
-		Cookie::forget(Auth::remember_key, $path, $domain, $secure);
+		$cookie = Config::get('auth.cookie');
+
+		Cookie::forget($cookie, $path, $domain, $secure);
 
 		Session::forget(Auth::user_key);
 	}

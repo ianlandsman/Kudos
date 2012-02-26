@@ -155,6 +155,7 @@ class Filter_Collection {
 	 *
 	 * @param  string|array  $filters
 	 * @param  mixed         $parameters
+	 * @return void
 	 */
 	public function __construct($filters, $parameters = null)
 	{
@@ -302,7 +303,7 @@ class Filter_Collection {
 	 */
 	public function on($methods)
 	{
-		$method = array_map('strtolower', (array) $methods);
+		$this->methods = array_map('strtolower', (array) $methods);
 		return $this;
 	}
 

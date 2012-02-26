@@ -1,16 +1,11 @@
 <?php namespace Laravel;
 
-if (Config::get('application.key') === '')
-{
-	throw new \Exception("An application key is required to use sessions.");
-}
-
 class Session {
 
 	/**
 	 * The session singleton instance for the request.
 	 *
-	 * @var Payload
+	 * @var Session\Payload
 	 */
 	public static $instance;
 
@@ -36,9 +31,9 @@ class Session {
 	 * Create a new session driver instance.
 	 *
 	 * @param  string  $driver
-	 * @return Driver
+	 * @return Session\Drivers\Driver
 	 */
-	protected static function factory($driver)
+	public static function factory($driver)
 	{
 		switch ($driver)
 		{
@@ -52,7 +47,7 @@ class Session {
 				return new Session\Drivers\Database(Database::connection());
 
 			case 'file':
-				return new Session\Drivers\File(SESSION_PATH);
+				return new Session\Drivers\File(path('storage').'sessions'.DS);
 
 			case 'memcached':
 				return new Session\Drivers\Memcached(Cache::driver('memcached'));
@@ -76,7 +71,7 @@ class Session {
 	 *		Session::instance()->put('name', 'Taylor');
 	 * </code>
 	 *
-	 * @return Payload
+	 * @return Session\Payload
 	 */
 	public static function instance()
 	{
@@ -111,7 +106,7 @@ class Session {
 	 */
 	public static function __callStatic($method, $parameters)
 	{
-		return call_user_func_array(array(static::$instance, $method), $parameters);
+		return call_user_func_array(array(static::instance(), $method), $parameters);
 	}
 
 }

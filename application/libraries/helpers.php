@@ -1,4 +1,4 @@
-<?php defined('APP_PATH') or die('No direct script access.');
+<?php defined('DS') or die('No direct script access.');
 
 
 class helpers {
@@ -15,9 +15,9 @@ class helpers {
 
 	public static function markdown($string)
 	{
-		require_once(APP_PATH.'/libraries/markdown.php');
+		require_once(path('app').'/libraries/markdown.php');
 
-		return markdown($string);
+		return static::clean(markdown($string));
 	}		
 
 	public static function restricted_file_get_contents($file)
@@ -85,5 +85,10 @@ class helpers {
 					);
 			}, $pages);
 		}
+	}
+
+	//Clean out bad UTF8 characters
+	public static function clean($string){
+		return iconv('UTF-8', 'UTF-8//IGNORE//TRANSLIT', $string);
 	}	
 }

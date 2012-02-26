@@ -4,6 +4,20 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
+	| Database Query Logging
+	|--------------------------------------------------------------------------
+	|
+	| By default, the SQL, bindings, and execution time are logged in an array
+	| for you to review. They can be retrieved via the DB::profile() method.
+	| However, in some situations, you may want to disable logging for
+	| ultra high-volume database work. You can do so here.
+	|
+	*/
+
+	'profile' => true,
+
+	/*
+	|--------------------------------------------------------------------------
 	| Default Database Connection
 	|--------------------------------------------------------------------------
 	|
@@ -14,7 +28,7 @@ return array(
 	|
 	*/
 
-	'default' => 'sqlite',
+	'default' => 'mysql',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -37,7 +51,8 @@ return array(
 
 		'sqlite' => array(
 			'driver'   => 'sqlite',
-			'database' => 'kudos_db',
+			'database' => 'application',
+			'prefix'   => '',
 		),
 
 		'mysql' => array(
@@ -45,8 +60,9 @@ return array(
 			'host'     => 'localhost',
 			'database' => 'database',
 			'username' => 'root',
-			'password' => 'password',
+			'password' => '',
 			'charset'  => 'utf8',
+			'prefix'   => '',
 		),
 
 		'pgsql' => array(
@@ -54,8 +70,9 @@ return array(
 			'host'     => 'localhost',
 			'database' => 'database',
 			'username' => 'root',
-			'password' => 'password',
+			'password' => '',
 			'charset'  => 'utf8',
+			'prefix'   => '',
 		),
 
 		'sqlsrv' => array(
@@ -63,7 +80,8 @@ return array(
 			'host'     => 'localhost',
 			'database' => 'database',
 			'username' => 'root',
-			'password' => 'password',
+			'password' => '',
+			'prefix'   => '',
 		),
 
 	),

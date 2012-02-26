@@ -1,26 +1,9 @@
 <?php namespace Laravel\CLI\Tasks\Migrate;
 
+use Laravel\Request;
 use Laravel\Database as DB;
 
 class Database {
-
-	/**
-	 * The CLI options.
-	 *
-	 * @var array
-	 */
-	protected $options;
-
-	/**
-	 * Create a new migration database instance.
-	 *
-	 * @param  array  $options
-	 * @return void
-	 */
-	public function __construct($options)
-	{
-		$this->options = $options;
-	}
 
 	/**
 	 * Log a migration in the migration table.
@@ -75,11 +58,7 @@ class Database {
 	 */
 	public function ran($bundle)
 	{
-		return array_map(function($migration)
-		{
-			return $migration->name;
-
-		} , $this->table()->where_bundle($bundle)->get());
+		return $this->table()->where_bundle($bundle)->lists('name');
 	}
 
 	/**
@@ -95,13 +74,11 @@ class Database {
 	/**
 	 * Get a database query instance for the migration table.
 	 *
-	 * @return Query
+	 * @return Laravel\Database\Query
 	 */
 	protected function table()
 	{
-		$connection = DB::connection(array_get($this->options, 'db'));
-
-		return $connection->table('laravel_migrations');
+		return DB::connection(Request::server('cli.db'))->table('laravel_migrations');
 	}
 
 }

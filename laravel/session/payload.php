@@ -8,11 +8,6 @@ use Laravel\Session;
 use Laravel\Session\Drivers\Driver;
 use Laravel\Session\Drivers\Sweeper;
 
-if (Config::get('application.key') === '')
-{
-	throw new \Exception("An application key is required to use sessions.");
-}
-
 class Payload {
 
 	/**
@@ -23,18 +18,18 @@ class Payload {
 	public $session;
 
 	/**
-	 * Indicates if the session already exists in storage.
-	 *
-	 * @var bool
-	 */
-	protected $exists = true;
-
-	/**
 	 * The session driver used to retrieve and store the session payload.
 	 *
 	 * @var Driver
 	 */
-	protected $driver;
+	public $driver;
+
+	/**
+	 * Indicates if the session already exists in storage.
+	 *
+	 * @var bool
+	 */
+	public $exists = true;
 
 	/**
 	 * Create a new session payload instance.
@@ -207,7 +202,7 @@ class Payload {
 	 *		Session::keep(array('name', 'email'));
 	 * </code>
 	 *
-	 * @param  string|array  $key
+	 * @param  string|array  $keys
 	 * @return void
 	 */
 	public function keep($keys)
@@ -265,6 +260,16 @@ class Payload {
 	public function token()
 	{
 		return $this->get(Session::csrf_token);
+	}
+
+	/**
+	 * Get the last activity for the session.
+	 *
+	 * @return int
+	 */
+	public function activity()
+	{
+		return $this->session['last_activity'];
 	}
 
 	/**

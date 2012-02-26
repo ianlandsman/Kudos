@@ -3,7 +3,7 @@
  * Laravel - A PHP Framework For Web Artisans
  *
  * @package  Laravel
- * @version  2.0.7
+ * @version  3.0.2
  * @author   Taylor Otwell <taylorotwell@gmail.com>
  * @link     http://laravel.com
  */
@@ -14,31 +14,21 @@
 define('LARAVEL_START', microtime(true));
 
 // --------------------------------------------------------------
-// The path to the application directory.
+// Indicate that the request is from the web.
 // --------------------------------------------------------------
-define('APP_PATH', realpath('../application').'/');
+$web = true;
 
 // --------------------------------------------------------------
-// The path to the bundles directory.
+// Set the core Laravel path constants.
 // --------------------------------------------------------------
-define('BUNDLE_PATH', realpath('../bundles').'/');
+require '../paths.php';
 
 // --------------------------------------------------------------
-// The path to the storage directory.
+// Unset the temporary web variable.
 // --------------------------------------------------------------
-define('STORAGE_PATH', realpath('../storage').'/');
-
-// --------------------------------------------------------------
-// The path to the Laravel directory.
-// --------------------------------------------------------------
-define('SYS_PATH', realpath('../laravel').'/');
-
-// --------------------------------------------------------------
-// The path to the public directory.
-// --------------------------------------------------------------
-define('PUBLIC_PATH', realpath(__DIR__).'/');
+unset($web);
 
 // --------------------------------------------------------------
 // Launch Laravel.
 // --------------------------------------------------------------
-require SYS_PATH.'/laravel.php';
+require path('sys').'laravel.php';

@@ -1,2 +1,2 @@
 <?php
-return require_once (dirname(APP_PATH) . '/kudos.php');
+return require_once (path('base') . 'kudos.php');

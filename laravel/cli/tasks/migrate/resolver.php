@@ -14,7 +14,7 @@ class Resolver {
 	/**
 	 * Create a new instance of the migration resolver.
 	 *
-	 * @param  Database  $datbase
+	 * @param  Database  $database
 	 * @return void
 	 */
 	public function __construct(Database $database)
@@ -37,7 +37,7 @@ class Resolver {
 		// returned by "all" method on the Bundle class.
 		if (is_null($bundle))
 		{
-			$bundles = array_merge(Bundle::all(), array('application'));
+			$bundles = array_merge(Bundle::names(), array('application'));
 		}
 		else
 		{
@@ -116,7 +116,7 @@ class Resolver {
 			// naming collisions with other bundle's migrations.
 			$prefix = Bundle::class_prefix($bundle);
 
-			$class = $prefix.substr($name, strpos($name, '_') + 1);
+			$class = $prefix.substr($name, 18);
 
 			$migration = new $class;
 
@@ -126,6 +126,14 @@ class Resolver {
 			// when the migration is executed.
 			$instances[] = compact('bundle', 'name', 'migration');
 		}
+
+		// At this point the migrations are only sorted within their
+		// bundles so we need to resort them by name to ensure they
+		// are in a consistent order.
+		usort($instances, function($a, $b)
+		{
+			return strcmp($a['name'], $b['name']);
+		});
 
 		return $instances;
 	}
@@ -139,6 +147,14 @@ class Resolver {
 	protected function migrations($bundle)
 	{
 		$files = glob(Bundle::path($bundle).'migrations/*_*'.EXT);
+
+		// When open_basedir is enabled, glob will return false on an
+		// empty directory, so we will return an empty array in this
+		// case so the application doesn't bomb out.
+		if ($files === false)
+		{
+			return array();
+		}
 
 		// Once we have the array of files in the migration directory,
 		// we'll take the basename of the file and remove the PHP file

@@ -99,7 +99,9 @@ class Table {
 	/**
 	 * Create a new index on the table.
 	 *
-	 * @param  string|array
+	 * @param  string|array  $columns
+	 * @param  string        $name
+	 * @return Fluent
 	 */
 	public function index($columns, $name = null)
 	{
@@ -114,11 +116,19 @@ class Table {
 	 * @param  string        $name
 	 * @return Fluent
 	 */
-	public function key($type, $columns, $name = null)
+	public function key($type, $columns, $name)
 	{
-		$parameters = array('name' => $name, 'columns' => (array) $columns);
+		$columns = (array) $columns;
 
-		return $this->command($type, $parameters);
+		// If no index name was specified, we will concatenate the columns and
+		// append the index type to the name to generate a unique name for
+		// the index that can be used when dropping indexes.
+		if (is_null($name))
+		{
+			$name = implode('_', $columns).'_'.$type;
+		}
+
+		return $this->command($type, compact('name', 'columns'));
 	}
 
 	/**
@@ -148,7 +158,7 @@ class Table {
 	 * @param  string  $name
 	 * @return void
 	 */
-	public function drop_primary($name)
+	public function drop_primary($name = null)
 	{
 		return $this->drop_key(__FUNCTION__, $name);
 	}
@@ -237,7 +247,6 @@ class Table {
 	 * Add a float column to the table.
 	 *
 	 * @param  string  $name
-	 * @param  bool    $increment
 	 * @return Fluent
 	 */
 	public function float($name)

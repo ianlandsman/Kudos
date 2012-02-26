@@ -10,6 +10,45 @@ abstract class Grammar {
 	protected $wrapper = '"%s"';
 
 	/**
+	 * The database connection instance for the grammar.
+	 *
+	 * @var Connection
+	 */
+	protected $connection;
+
+	/**
+	 * Create a new database grammar instance.
+	 *
+	 * @param  Connection  $connection
+	 * @return void
+	 */
+	public function __construct(Connection $connection)
+	{
+		$this->connection = $connection;
+	}
+
+	/**
+	 * Wrap a table in keyword identifiers.
+	 *
+	 * @param  string  $table
+	 * @return string
+	 */
+	public function wrap_table($table)
+	{
+		$prefix = '';
+
+		// Tables may be prefixed with a string. This allows developers to
+		// prefix tables by application on the same database which may be
+		// required in some brown-field situations.
+		if (isset($this->connection->config['prefix']))
+		{
+			$prefix = $this->connection->config['prefix'];
+		}
+
+		return $this->wrap($prefix.$table);
+	}
+
+	/**
 	 * Wrap a value in keyword identifiers.
 	 *
 	 * @param  string  $value
@@ -17,21 +56,27 @@ abstract class Grammar {
 	 */
 	public function wrap($value)
 	{
+		// Expressions should be injected into the query as raw strings so
+		// so we do not want to wrap them in any way. We will just return
+		// the string value from the expression to be included.
+		if ($value instanceof Expression)
+		{
+			return $value->get();
+		}
+
 		// If the value being wrapped contains a column alias, we need to
 		// wrap it a little differently as each segment must be wrapped
-		// and not the entire string. We'll split the value on the "as"
-		// joiner to extract the column and the alias.
+		// and not the entire string.
 		if (strpos(strtolower($value), ' as ') !== false)
 		{
 			$segments = explode(' ', $value);
 
-			return $this->wrap($segments[0]).' AS '.$this->wrap($segments[2]);
+			return sprintf(
+				'%s AS %s',
+				$this->wrap($segments[0]),
+				$this->wrap($segments[2])
+			);
 		}
-
-		// Expressions should be injected into the query as raw strings,
-		// so we do not want to wrap them in any way. We'll just return
-		// the string value from the expression to be included.
-		if ($value instanceof Expression) return $value->get();
 
 		// Since columns may be prefixed with their corresponding table
 		// name so as to not make them ambiguous, we will need to wrap

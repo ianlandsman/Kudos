@@ -7,7 +7,7 @@ class Fluent {
 	 *
 	 * @var array
 	 */
-	protected $attributes = array();
+	public $attributes = array();
 
 	/**
 	 * Create a new fluent container instance.
@@ -37,7 +37,7 @@ class Fluent {
 	 */
 	public function get($attribute, $default = null)
 	{
-		return array_get($attributes, $attribute, $default);
+		return array_get($this->attributes, $attribute, $default);
 	}
 
 	/**

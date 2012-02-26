@@ -75,10 +75,9 @@ class Migrator extends Task {
 			return;
 		}
 
-		// We need to grab the latest batch ID and increment it
-		// by one. This allows us to group the migrations such
-		// that we can easily determine which migrations need
-		// to be rolled back for a given command.
+		// We need to grab the latest batch ID and increment it by one.
+		// This allows us to group the migrations so we can easily
+		// determine which migrations need to roll back.
 		$batch = $this->database->batch() + 1;
 
 		foreach ($migrations as $migration)
@@ -87,9 +86,9 @@ class Migrator extends Task {
 
 			echo 'Migrated: '.$this->display($migration).PHP_EOL;
 
-			// After running a migration, we log its execution in the
-			// migration table so that we can easily determine which
-			// migrations we will need to reverse on a rollback.
+			// After running a migration, we log its execution in the migration
+			// table so that we can easily determine which migrations we'll
+			// reverse in the event of a migration rollback.
 			$this->database->log($migration['bundle'], $migration['name'], $batch);
 		}
 	}
@@ -113,9 +112,8 @@ class Migrator extends Task {
 
 		// The "last" method on the resolver returns an array of migrations,
 		// along with their bundles and names. We will iterate through each
-		// migration and run the "down" method, removing them from the
-		// database as we go.
-		foreach ($migrations as $migration)
+		// migration and run the "down" method.
+		foreach (array_reverse($migrations) as $migration)
 		{
 			$migration['migration']->down();
 
@@ -123,8 +121,7 @@ class Migrator extends Task {
 
 			// By only removing the migration after it has successfully rolled back,
 			// we can re-run the rollback command in the event of any errors with
-			// the migration. When we re-run, only the migrations that have not
-			// been rolled-back for the batch will still be in the database.
+			// the migration and pick up where we left off.
 			$this->database->delete($migration['bundle'], $migration['name']);
 		}
 
@@ -176,8 +173,8 @@ class Migrator extends Task {
 	/**
 	 * Generate a new migration file.
 	 *
-	 * @param  array  $arguments
-	 * @return void
+	 * @param  array   $arguments
+	 * @return string
 	 */
 	public function make($arguments = array())
 	{
@@ -188,15 +185,29 @@ class Migrator extends Task {
 
 		list($bundle, $migration) = Bundle::parse($arguments[0]);
 
-		// The migration path is prefixed with the UNIX timestamp, which
+		// The migration path is prefixed with the date timestamp, which
 		// is a better way of ordering migrations than a simple integer
 		// incrementation, since developers may start working on the
-		// next migration at the same time.
-		$path = Bundle::path($bundle).'migrations/'.time().'_'.$migration.EXT;
+		// next migration at the same time unknowingly.
+		$prefix = date('Y_m_d_His');
 
-		File::put($path, $this->stub($bundle, $migration));
+		$path = Bundle::path($bundle).'migrations'.DS;
+
+		// If the migration directory does not exist for the bundle,
+		// we will create the directory so there aren't errors when
+		// when we try to write the migration file.
+		if ( ! is_dir($path)) mkdir($path);
+
+		$file = $path.$prefix.'_'.$migration.EXT;
+
+		File::put($file, $this->stub($bundle, $migration));
 
 		echo "Great! New migration created!";
+
+		// Once the migration has been created, we'll return the
+		// migration file name so it can be used by the task
+		// consumer if necessary for futher work.
+		return $file;
 	}
 
 	/**
@@ -208,13 +219,14 @@ class Migrator extends Task {
 	 */
 	protected function stub($bundle, $migration)
 	{
-		$stub = File::get(SYS_PATH.'cli/tasks/migrate/stub'.EXT);
+		$stub = File::get(path('sys').'cli/tasks/migrate/stub'.EXT);
+
+		$prefix = Bundle::class_prefix($bundle);
 
 		// The class name is formatted simialrly to tasks and controllers,
 		// where the bundle name is prefixed to the class if it is not in
-		// the default bundle. However, unlike tasks, there is nothing
-		// appended to the class name since they're already unique.
-		$class = Bundle::class_prefix($bundle).Str::classify($migration);
+		// the default "application" bundle.
+		$class = $prefix.Str::classify($migration);
 
 		return str_replace('{{class}}', $class, $stub);
 	}

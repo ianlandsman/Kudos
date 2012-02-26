@@ -49,7 +49,7 @@ __Who am I?__ A dude with a blog.
 |
 */
 
-'content_path' =>  dirname(APP_PATH) . DIRECTORY_SEPARATOR . 'content',	
+'content_path' =>  path('base') . 'content',	
 
 /*
 |--------------------------------------------------------------------------

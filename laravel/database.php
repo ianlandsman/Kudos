@@ -26,7 +26,7 @@ class Database {
 	 * </code>
 	 *
 	 * @param  string      $connection
-	 * @return Connection
+	 * @return Database\Connection
 	 */
 	public static function connection($connection = null)
 	{
@@ -62,7 +62,7 @@ class Database {
 	 * Create a new database connector instance.
 	 *
 	 * @param  string     $driver
-	 * @return Connector
+	 * @return Database\Connectors\Connector
 	 */
 	protected static function connector($driver)
 	{
@@ -90,7 +90,7 @@ class Database {
 	 *
 	 * @param  string          $table
 	 * @param  string          $connection
-	 * @return Queries\Query
+	 * @return Database\Query
 	 */
 	public static function table($table, $connection = null)
 	{
@@ -108,6 +108,16 @@ class Database {
 	public static function raw($value)
 	{
 		return new Expression($value);
+	}
+
+	/**
+	 * Get the profiling data for all queries.
+	 *
+	 * @return array
+	 */
+	public static function profile()
+	{
+		return Database\Connection::$queries;
 	}
 
 	/**

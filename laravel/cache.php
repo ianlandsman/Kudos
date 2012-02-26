@@ -1,4 +1,4 @@
-<?php namespace Laravel; defined('APP_PATH') or die('No direct script access.');
+<?php namespace Laravel; defined('DS') or die('No direct script access.');
 
 class Cache {
 
@@ -23,7 +23,7 @@ class Cache {
 	 * </code>
 	 *
 	 * @param  string        $driver
-	 * @return Cache\Driver
+	 * @return Cache\Drivers\Driver
 	 */
 	public static function driver($driver = null)
 	{
@@ -41,7 +41,7 @@ class Cache {
 	 * Create a new cache driver instance.
 	 *
 	 * @param  string  $driver
-	 * @return Driver
+	 * @return Cache\Drivers\Driver
 	 */
 	protected static function factory($driver)
 	{
@@ -51,7 +51,7 @@ class Cache {
 				return new Cache\Drivers\APC(Config::get('cache.key'));
 
 			case 'file':
-				return new Cache\Drivers\File(CACHE_PATH);
+				return new Cache\Drivers\File(path('storage').'cache'.DS);
 
 			case 'memcached':
 				return new Cache\Drivers\Memcached(Memcached::connection(), Config::get('cache.key'));
