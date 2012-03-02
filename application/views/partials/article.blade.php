@@ -1,6 +1,6 @@
 <?php defined('DS') or die('No direct script access.'); ?>
 
-@if ($draft)
+@if (isset($draft) and $draft)
 	<div class="draft">
 	This article is a <strong>draft</strong>. Do not link to this URL.
 	</div>

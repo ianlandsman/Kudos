@@ -1,13 +1,16 @@
-@if ($articles)
+@if (isset($articles) and $articles)
 <h2 class="home">Articles</h2>
 <nav>
+
 	<ul class="clean">
-		@foreach ($articles AS $article)
+		@foreach ($articles->results AS $article)
 			<li>
-				<span class="date">{{$article['year']}}-{{$article['month']}}-{{$article['day']}}</span> - 
-				<a href="{{$article['link']}}">{{Str::limit(Str::title($article['title']),50)}}</a>
+				<span class="date">{{date('Y-m-d', Article::date($article))}}</span> -
+				<a href="{{Article::url($article)}}">{{Str::limit(Str::title(Article::title($article)),50)}}</a>
 			</li>
 		@endforeach
 	</ul>
+
+	{{$articles->links()}}
 </nav>
 @endif
