@@ -9,17 +9,16 @@
     <copyright>{{URL::to()}}</copyright>
     <ttl>30</ttl>
 
-    @foreach ($articles AS $article)
-	    <item>
-	      <title>{{e(Str::title($article['title']))}}</title>
-	      <description>
-	      {{helpers::markdown_file($article['path'])}}
-	      </description>
-	      <link>{{$article['link']}}</link>
-	      <guid isPermaLink="true">{{$article['link']}}</guid>
-	      <pubDate>{{date(DATE_RSS, mktime(0,0,0,$article['month'],$article['day'],$article['year']))}}</pubDate>
-	    </item>
-    @endforeach
-
+    @foreach ($articles->results AS $article)
+		<item>
+			<title>{{e(Article::title($article))}}</title>
+			<description>
+			{{Article::content($article)}}
+			</description>
+			<link>{{Article::url($article)}}</link>
+			<guid isPermaLink="true">{{Article::url($article)}}</guid>
+			<pubDate>{{date(DATE_RSS, Article::date($article))}}</pubDate>
+		</item>
+	@endforeach
   </channel>
 </rss>

@@ -1,9 +1,12 @@
 <?php defined('DS') or die('No direct script access.'); ?>
-
 <!doctype html>
 <head>
 	<meta charset="utf-8">
-	<title>{{$title}}{{Config::get('kudos.site_name')}}</title>
+	@if (isset($title))
+		<title>{{$title}}{{Config::get('kudos.site_name')}}</title>
+	@else
+		<title>{{Config::get('kudos.site_name')}}</title>
+	@endif
 
 	<!-- Google Fonts -->
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700' rel='stylesheet' type='text/css'>
@@ -17,34 +20,22 @@
 </head>
 
 <body>
-
-
 	<header>
-		
 		<a href="{{URL::to()}}">{{Config::get('kudos.site_name')}}</a>
-	
 	</header>
-	
-		
 	{{$body}}
-	
-	
 	<footer>
-		
 		<p>
-			<small>&copy; Copyright {{date('Y')}}. All Rights Reserved.</small> 
+			<small>&copy; Copyright {{date('Y')}}. All Rights Reserved.</small>
 			<small>Powered by <a href="https://github.com/ianlandsman/Kudos">Kudos</a></small>
 		</p>
-		
 	</footer>
-
 
 <!-- jQuery just in case -->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 
-@if (Config::get('kudos.google_analytics_id')) 
+@if (Config::get('kudos.google_analytics_id'))
 	<script>
-
 	  var _gaq = _gaq || [];
 	  _gaq.push(['_setAccount', '{{Config::get('kudos.google_analytics_id')}}']);
 	  _gaq.push(['_trackPageview']);
@@ -57,6 +48,6 @@
 
 	</script>
 @endif
-  
+
 </body>
 </html>
