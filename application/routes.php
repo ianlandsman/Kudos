@@ -14,8 +14,8 @@ Route::get('/', function()
 * Handle the article URL's which are YYYY/MM/DD/Title
 */
 Route::get('(:any)/(:any)/(:any)/(:any)', function($year=false,$month=false,$day=false,$article=false)
-{ 
-	if($article && file_exists($path = Config::get('kudos.content_path')."/published/{$year}{$month}{$day}-{$article}.markdown"))
+{
+	if ($article && file_exists($path = Config::get('kudos.content_path')."/published/{$year}{$month}{$day}-{$article}.markdown"))
 	{
 		return View::make('layout', array('title' => helpers::unslug($article) . ' :: '))
 					->nest('body', 'partials.article', array('body'=>helpers::markdown_file($path)));
@@ -28,10 +28,10 @@ Route::get('(:any)/(:any)/(:any)/(:any)', function($year=false,$month=false,$day
 */
 Route::get('draft/(:any)', function($article=false)
 {
-	if($article && file_exists($path = Config::get('kudos.content_path')."/drafts/{$article}.markdown"))
+	if ($article && file_exists($path = Config::get('kudos.content_path')."/drafts/{$article}.markdown"))
 	{
 		return View::make('layout', array('title' => helpers::unslug($article) . ' :: '))
-					->nest('body', 'partials.article', array('body'=>helpers::markdown_file($path),'draft' => true));	
+					->nest('body', 'partials.article', array('body'=>helpers::markdown_file($path),'draft' => true));
 	}
 });
 
@@ -49,10 +49,10 @@ Route::get('page', function()
 */
 Route::get('page/(:any)', function($page=false)
 {
-	if($page && file_exists($path = Config::get('kudos.content_path').'/pages/'.$page.'.markdown'))
+	if ($page && file_exists($path = Config::get('kudos.content_path').'/pages/'.$page.'.markdown'))
 	{
 		return View::make('layout', array('title' => helpers::unslug($page) . ' :: '))
-					->nest('body', 'partials.article', array('body'=>helpers::markdown_file($path)));		
+					->nest('body', 'partials.article', array('body'=>helpers::markdown_file($path)));
 	}
 });
 
@@ -62,7 +62,7 @@ Route::get('page/(:any)', function($page=false)
 Route::get('archive', function()
 {
 	return View::make('layout', array('title' => 'Archive :: '))
-				->nest('body', 'partials.archive', array('articles'=>helpers::articles()));					
+				->nest('body', 'partials.archive', array('articles'=>helpers::articles()));
 });
 
 /**
@@ -79,11 +79,11 @@ Route::get('rss', function()
 */
 Route::filter('before', function()
 {
-	if(Config::get('kudos.cache'))
+	if (Config::get('kudos.cache'))
 	{
-		$key = md5(URI::current());
+		$key = md5(rtrim(URI::current().'-'.Input::get('page'), '-'));
 
-		if(Cache::has($key)) 
+		if (Cache::has($key))
 		{
 			return Cache::get($key);
 		}
@@ -96,12 +96,12 @@ Route::filter('before', function()
 */
 Route::filter('after', function($response)
 {
-	if(Config::get('kudos.cache'))
+	if (Config::get('kudos.cache'))
 	{
-		$key = md5(URI::current());
+		$key = md5(rtrim(URI::current().'-'.Input::get('page'), '-'));
 
-		if( ! Cache::has($key)) 
-		{		
+		if ( ! Cache::has($key))
+		{
 			Cache::put($key, $response->content, 10);
 		}
 	}
