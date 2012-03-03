@@ -7,7 +7,7 @@ use Laravel\Routing;
 */
 Route::get('/', function()
 {
-	return View::make('layout')->nest('body', 'partials.home', array('articles'=>helpers::articles(20), 'pages'=>helpers::pages()));
+	return View::make(Config::get('kudos.theme').'.layout')->nest('body', Config::get('kudos.theme').'.partials.home', array('articles'=>helpers::articles(1), 'pages'=>helpers::pages()));
 });
 
 /**
@@ -15,10 +15,10 @@ Route::get('/', function()
 */
 Route::get('(:any)/(:any)/(:any)/(:any)', function($year=false,$month=false,$day=false,$article=false)
 {
-	if ($article && file_exists($path = Config::get('kudos.content_path')."/published/{$year}{$month}{$day}-{$article}.markdown"))
+	if ($article && file_exists($path = Config::get('kudos.content_path')."/published/{$year}{$month}{$day}-{$article}".Config::get('kudos.markdown_extension')))
 	{
-		return View::make('layout', array('title' => helpers::unslug($article) . ' :: '))
-					->nest('body', 'partials.article', array('body'=>helpers::markdown_file($path)));
+		return View::make(Config::get('kudos.theme').'.layout', array('title' => helpers::unslug($article) . ' :: '))
+					->nest('body', Config::get('kudos.theme').'.partials.article', array('body'=>helpers::markdown_file($path)));
 	}
 });
 
@@ -28,10 +28,10 @@ Route::get('(:any)/(:any)/(:any)/(:any)', function($year=false,$month=false,$day
 */
 Route::get('draft/(:any)', function($article=false)
 {
-	if ($article && file_exists($path = Config::get('kudos.content_path')."/drafts/{$article}.markdown"))
+	if ($article && file_exists($path = Config::get('kudos.content_path')."/drafts/{$article}".Config::get('kudos.markdown_extension')))
 	{
-		return View::make('layout', array('title' => helpers::unslug($article) . ' :: '))
-					->nest('body', 'partials.article', array('body'=>helpers::markdown_file($path),'draft' => true));
+		return View::make(Config::get('kudos.theme').'.layout', array('title' => helpers::unslug($article) . ' :: '))
+					->nest('body', Config::get('kudos.theme').'.partials.article', array('body'=>helpers::markdown_file($path), 'draft' => true));
 	}
 });
 
@@ -40,7 +40,7 @@ Route::get('draft/(:any)', function($article=false)
 */
 Route::get('page', function()
 {
-	return View::make('layout')->nest('body', 'partials.pages', array('pages'=>helpers::pages()));
+	return View::make(Config::get('kudos.theme').'.layout')->nest('body', Config::get('kudos.theme').'.partials.pages', array('pages'=>helpers::pages()));
 });
 
 /**
@@ -49,10 +49,10 @@ Route::get('page', function()
 */
 Route::get('page/(:any)', function($page=false)
 {
-	if ($page && file_exists($path = Config::get('kudos.content_path').'/pages/'.$page.'.markdown'))
+	if ($page && file_exists($path = Config::get('kudos.content_path').'/pages/'.$page.Config::get('kudos.markdown_extension')))
 	{
-		return View::make('layout', array('title' => helpers::unslug($page) . ' :: '))
-					->nest('body', 'partials.article', array('body'=>helpers::markdown_file($path)));
+		return View::make(Config::get('kudos.theme').'.layout', array('title' => helpers::unslug($page) . ' :: '))
+					->nest('body', Config::get('kudos.theme').'.partials.article', array('body'=>helpers::markdown_file($path)));
 	}
 });
 
@@ -61,8 +61,8 @@ Route::get('page/(:any)', function($page=false)
 */
 Route::get('archive', function()
 {
-	return View::make('layout', array('title' => 'Archive :: '))
-				->nest('body', 'partials.archive', array('articles'=>helpers::articles()));
+	return View::make(Config::get('kudos.theme').'.layout', array('title' => 'Archive :: '))
+				->nest('body', Config::get('kudos.theme').'.partials.archive', array('articles'=>helpers::articles()));
 });
 
 /**
@@ -70,7 +70,7 @@ Route::get('archive', function()
 */
 Route::get('rss', function()
 {
-	return Response::make(View::make('rss')->with('articles', helpers::articles(20)), 200, array("Content-Type"=>"application/rss+xml"));
+	return Response::make(View::make(Config::get('kudos.theme').'.rss')->with('articles', helpers::articles(20)), 200, array("Content-Type"=>"application/rss+xml"));
 });
 
 /**
@@ -107,7 +107,7 @@ Route::filter('after', function($response)
 	}
 });
 
-/**
+/*
 |--------------------------------------------------------------------------
 | Application 404 & 500 Error Handlers
 |--------------------------------------------------------------------------

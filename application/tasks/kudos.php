@@ -8,22 +8,22 @@ class Kudos_task {
 	 * Publish any articles waiting in the publish folder
 	 *
 	 * @return void
-	 */	
+	 */
 	public function publish(){
-		// Move articles in the publish folder to published. 
-		// Assign the current date to the filename 
+		// Move articles in the publish folder to published.
+		// Assign the current date to the filename
 		$date = date('Ymd');
 
-		$articles = glob(Config::get('kudos.content_path')."/publish/*.markdown");
-		
+		$articles = glob(Config::get('kudos.content_path')."/publish/*".Config::get('kudos.markdown_extension'));
+
 		if($articles){
-			foreach ($articles as $draft) 
+			foreach ($articles as $draft)
 			{
 				rename($draft, str_replace('content/publish/', "content/published/{$date}-", $draft));
 			}
 
 			// Clear the homepage cache so the articles appear right away
-			Cache::forget(md5('/'));			
+			Cache::forget(md5('/'));
 		}
 	}
 
@@ -34,13 +34,13 @@ class Kudos_task {
 	 * to each Laravel cache driver.
 	 *
 	 * @return void
-	 */	
+	 */
 	public function clear_cache(){
-		foreach (glob(STORAGE_PATH . "/cache/*") as $cache) 
+		foreach (glob(STORAGE_PATH . "/cache/*") as $cache)
 		{
 			@unlink($cache);
 		}
-	}	
+	}
 
 	/**
 	 * Run the installation process which creates the database, sets up Laravel
@@ -49,7 +49,7 @@ class Kudos_task {
 	 * Current we don't use the DB for Kudos but we may in the future
 	 *
 	 * @return void
-	 */	
+	 */
 	public function install(){
 
 		// Don't allow an installation to proceed without the content path set
@@ -63,7 +63,7 @@ class Kudos_task {
 		// Install the sqlite DB
 		if( ! file_exists($path) && ! touch($path))
 		{
-			die('Database path not writable: ' . $path . PHP_EOL);				
+			die('Database path not writable: ' . $path . PHP_EOL);
 		}
 		else
 		{
@@ -76,7 +76,7 @@ class Kudos_task {
 	 * Run the upgrade migrations
 	 *
 	 * @return void
-	 */	
+	 */
 	public function upgrade(){
 		echo system('php artisan migrate:run') . PHP_EOL;
 	}
