@@ -6,9 +6,14 @@
 	</div>
 @endif
 
-<article class="article">
+<article class="article {{$type}}">
+
 	{{$body}}
 
+	Tagged:
+	@foreach ($tags as $tag)
+		{{$tag}},
+	@endforeach
 	@if (Config::get('kudos.disqus_shortname'))
 		{{View::make('partials.disqus')}}
 	@endif

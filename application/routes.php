@@ -17,8 +17,18 @@ Route::get('(:any)/(:any)/(:any)/(:any)', function($year=false,$month=false,$day
 {
 	if ($article && file_exists($path = Config::get('kudos.content_path')."/published/{$year}{$month}{$day}-{$article}".Config::get('kudos.markdown_extension')))
 	{
+		$data = article::parse($path);
+
+		$view = View::make(Config::get('kudos.theme').'.layout')
+			->with('title', helpers::unslug($article) . ' :: ')
+			->nest('body', Config::get('kudos.theme').'.partials.article', $data);
+
+		return $view;
+
 		return View::make(Config::get('kudos.theme').'.layout', array('title' => helpers::unslug($article) . ' :: '))
-					->nest('body', Config::get('kudos.theme').'.partials.article', array('body'=>helpers::markdown_file($path)));
+					->nest('body', Config::get('kudos.theme').'.partials.article',
+						array('body'=>article::content($path))
+					);
 	}
 });
 
