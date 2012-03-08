@@ -25,14 +25,14 @@ return array(
 
 'about_me' => '
 __Who am I?__ A dude with a blog.
-',			
+',
 
 /*
 |--------------------------------------------------------------------------
 | Google Analytics ID
 |--------------------------------------------------------------------------
 |
-| The ID for your google analytics account. The javascript snippet will be included on 
+| The ID for your google analytics account. The javascript snippet will be included on
 | every page using the main layout.
 |
 */
@@ -44,12 +44,12 @@ __Who am I?__ A dude with a blog.
 | Content Path
 |--------------------------------------------------------------------------
 |
-| Path to the sites content folder where pages, drafts and published articles are 
-| stored. 
+| Path to the sites content folder where pages, drafts and published articles are
+| stored.
 |
 */
 
-'content_path' =>  path('base') . 'content',	
+'content_path' =>  path('base') . 'content',
 
 /*
 |--------------------------------------------------------------------------
@@ -72,7 +72,7 @@ __Who am I?__ A dude with a blog.
 |
 */
 
-'cache' =>  true,	
+'cache' =>  true,
 
 /*
 |--------------------------------------------------------------------------
@@ -87,7 +87,7 @@ __Who am I?__ A dude with a blog.
 | Usage: Specify your forum shortname as string.
 |
 */
-    
+
 'disqus_shortname' => '',
 
 /*
@@ -106,7 +106,18 @@ __Who am I?__ A dude with a blog.
 | Usage: Specify 1 for on and 0 for off. If undefined, disqus_developer is off.
 |
 */
-    
-'disqus_developer' => 0, 	
+
+'disqus_developer' => 0,
+
+/*
+|--------------------------------------------------------------------------
+| Markdown Extension
+|--------------------------------------------------------------------------
+|
+| The file extension you want to use for markdown files.
+|
+*/
+
+'markdown_extension' => '.markdown',
 
 );
