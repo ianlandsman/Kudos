@@ -46,6 +46,7 @@ class helpers {
 			if ($count == '*' OR $count >= count($articles)) return Paginator::make($articles, count($articles), 100);
 
 			// bug in paging?
+			var_dump($articles);
 			$sliced = array_slice($articles, Input::get('page', 1)-1, $count);
 			return Paginator::make($sliced, count($articles), 1);
 		}

@@ -68,7 +68,7 @@ class Article {
 			foreach ($headers as $header)
 			{
 				$type = explode(':', $header);
-				$value = str_replace(' ', '', $type[1]);
+				$value = trim($type[1]);
 				switch (strtolower($type[0]))
 				{
 					case 'tags':
@@ -81,7 +81,33 @@ class Article {
 			}
 		}
 
+		$data['title'] = (isset($data['title'])) ? $data['title'] : Str::limit(Str::title(static::title($path)));
+		$data['url'] = static::url($path);
+		$data['date'] = static::date($path);
 		$data['body'] = helpers::markdown($segments[1]);
 		return $data;
+	}
+
+	public static function get($count = '*')
+	{
+		// Get all the articles
+		$articles = glob(Config::get('kudos.content_path')."/published/*".Config::get('kudos.markdown_extension'));
+
+		if ($articles)
+		{
+			// Sort them newest to oldest
+			rsort($articles);
+
+			// Are we limiting? If not let's just give them a set number
+			if ($count == '*') $count = 25;
+
+			// bug in paging?
+			$sliced = array_slice($articles, Input::get('page', 1)-1, $count);
+			foreach ($sliced as $path)
+			{
+				$article[] = static::parse($path);
+			}
+			return Paginator::make($article, count($articles), $count);
+		}
 	}
 }

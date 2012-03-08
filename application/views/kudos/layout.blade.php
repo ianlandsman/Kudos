@@ -3,10 +3,13 @@
 <head>
 	<meta charset="utf-8">
 	@if (isset($title))
-		<title>{{$title}}{{Config::get('kudos.site_name')}}</title>
+	<title>{{$title}}{{Config::get('kudos.site_name')}}</title>
 	@else
-		<title>{{Config::get('kudos.site_name')}}</title>
+	<title>{{Config::get('kudos.site_name')}}</title>
 	@endif
+
+	<meta name="keywords" content="{{$keywords}}">
+	<meta name="description" content="{{$description}}">
 
 	<!-- Google Fonts -->
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700' rel='stylesheet' type='text/css'>
@@ -16,7 +19,7 @@
 	<link rel="stylesheet" href="{{URL::to_asset(Config::get('kudos.theme').'/css/kudos.css')}}">
 
 	<!-- RSS -->
-	<link rel="alternate" type="application/rss+xml" title="RSS" href="{{URL::to('/rss')}}" />
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="{{URL::to('/rss')}}">
 </head>
 
 <body>
