@@ -4,7 +4,7 @@
 	{{helpers::markdown(Config::get('kudos.about_me'))}}
 </article>
 
-{{View::make('partials.archive')->with('articles', $articles)}}
+{{View::make(Config::get('kudos.theme').'.partials.archive')->with('articles', $articles)}}
 
 <h2 class="home">Everything Else</h2>
 <nav>
