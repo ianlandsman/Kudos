@@ -60,7 +60,7 @@ Type: link
 Keywords: test, test
 Description: My fancy description
 
-\# Title
+# Title
 
 body content
 ```
