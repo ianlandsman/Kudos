@@ -51,8 +51,15 @@ class Article {
 		return helpers::markdown_file($path);
 	}
 
+	/**
+	 * Parse the article for any header info
+	 * @param  string $path
+	 * @return array
+	 */
 	public static function parse($path = '')
 	{
+		$data = array();
+
 		$segments = explode("\n\n", trim(file_get_contents($path)), 2);
 
 		if (count($segments) > 1)
@@ -67,9 +74,9 @@ class Article {
 					case 'tags':
 						$data['tags'] = explode(',', $value);
 					break;
-					case 'type':
-						$data['type'] = $value;
-					break;
+					default:
+						$key = strtolower($type[0]);
+						$data[$key] = $value;
 				}
 			}
 		}

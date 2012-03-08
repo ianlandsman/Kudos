@@ -6,11 +6,11 @@ I built this to run [ianlandsman.com](http://ianlandsman.com) over a weekend :) 
 
 ### Installation
 
-Drop the Kudos files into your website folder. Optimally you'll want to make the "public" folder the document root and keep the other folders outside the document root. 
+Drop the Kudos files into your website folder. Optimally you'll want to make the "public" folder the document root and keep the other folders outside the document root.
 
 **rename kudos-example.php** to **kudos.php**
 
-Edit kudos.php to set your name and intro. 
+Edit kudos.php to set your name and intro.
 
 Setup a cron to call this command every minute:
 
@@ -49,3 +49,27 @@ Kudos caches every URL for 10 minutes. If you need to clear the cache manually y
     php artisan Kudos:clear_cache
 
 Currently Kudos doesn't handle media. I'd recommend just using public dropbox folder as a simple solution.
+
+## WIP
+
+You can now define tags in the top of posts. Here is an example:
+
+```md
+Tags: tag1, tag2
+Type: link
+Keywords: test, test
+Description: My fancy description
+
+\# Title
+
+body content
+```
+
+The top part is returned to the view as a key => value. So with this example your variables would be:
+
+	{{$type}}
+	{{$keywords}}
+	{{$description}}
+
+
+Tags are special in that are converted into an array.

@@ -7,7 +7,12 @@ use Laravel\Routing;
 */
 Route::get('/', function()
 {
-	return View::make(Config::get('kudos.theme').'.layout')->nest('body', Config::get('kudos.theme').'.partials.home', array('articles'=>helpers::articles(1), 'pages'=>helpers::pages()));
+	return View::make(Config::get('kudos.theme').'.layout')
+		->nest('body', Config::get('kudos.theme').'.partials.home', array(
+			'articles'=>helpers::articles(1),
+			'pages'=>helpers::pages()
+		)
+	);
 });
 
 /**
@@ -24,11 +29,6 @@ Route::get('(:any)/(:any)/(:any)/(:any)', function($year=false,$month=false,$day
 			->nest('body', Config::get('kudos.theme').'.partials.article', $data);
 
 		return $view;
-
-		return View::make(Config::get('kudos.theme').'.layout', array('title' => helpers::unslug($article) . ' :: '))
-					->nest('body', Config::get('kudos.theme').'.partials.article',
-						array('body'=>article::content($path))
-					);
 	}
 });
 
