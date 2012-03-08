@@ -5,7 +5,7 @@ class helpers {
 
 	public static function unslug($text)
 	{
-		return str_replace('-', ' ', $text);
+		return ucfirst(str_replace('-', ' ', $text));
 	}
 
 	public static function markdown_file($file)
@@ -35,7 +35,7 @@ class helpers {
 	public static function articles($count = '*')
 	{
 		// Get all the articles
-		$articles = glob(Config::get('kudos.content_path')."/published/*.markdown");
+		$articles = glob(Config::get('kudos.content_path')."/published/*".Config::get('kudos.markdown_extension'));
 
 		if ($articles)
 		{
@@ -43,7 +43,7 @@ class helpers {
 			rsort($articles);
 
 			// Are we limiting? If not let's just give them a bunch
-			if ($count == '*') return Paginator::make($articles, count($articles), 100);
+			if ($count == '*' OR $count >= count($articles)) return Paginator::make($articles, count($articles), 100);
 
 			// bug in paging?
 			$sliced = array_slice($articles, Input::get('page', 1)-1, $count);
@@ -71,7 +71,7 @@ class helpers {
 	public static function pages()
 	{
 		// Get all the articles
-		$pages = glob(Config::get('kudos.content_path')."/pages/*.markdown");
+		$pages = glob(Config::get('kudos.content_path')."/pages/*".Config::get('kudos.markdown_extension'));
 
 		if ($pages)
 		{

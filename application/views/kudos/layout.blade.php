@@ -12,8 +12,8 @@
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700' rel='stylesheet' type='text/css'>
 
 	<!-- Kudos stylesheets -->
-	<link rel="stylesheet" href="{{URL::to_asset('css/html5reset.css')}}">
-	<link rel="stylesheet" href="{{URL::to_asset('css/'.Config::get('kudos.theme').'.css')}}">
+	<link rel="stylesheet" href="{{URL::to_asset(Config::get('kudos.theme').'/css/html5reset.css')}}">
+	<link rel="stylesheet" href="{{URL::to_asset(Config::get('kudos.theme').'/css/kudos.css')}}">
 
 	<!-- RSS -->
 	<link rel="alternate" type="application/rss+xml" title="RSS" href="{{URL::to('/rss')}}" />

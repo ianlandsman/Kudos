@@ -51,4 +51,30 @@ class Article {
 		return helpers::markdown_file($path);
 	}
 
+	public static function parse($path = '')
+	{
+		$segments = explode("\n\n", trim(file_get_contents($path)), 2);
+
+		if (count($segments) > 1)
+		{
+			$headers = explode("\n", $segments[0]);
+			foreach ($headers as $header)
+			{
+				$type = explode(':', $header);
+				$value = str_replace(' ', '', $type[1]);
+				switch (strtolower($type[0]))
+				{
+					case 'tags':
+						$data['tags'] = explode(',', $value);
+					break;
+					case 'type':
+						$data['type'] = $value;
+					break;
+				}
+			}
+		}
+
+		$data['body'] = helpers::markdown($segments[1]);
+		return $data;
+	}
 }
