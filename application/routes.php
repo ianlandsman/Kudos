@@ -12,7 +12,8 @@ Route::get('/', function()
 		->with('keywords', '')
 		->nest('body', Config::get('kudos.theme').'.partials.home', array(
 			'articles' => article::get('*'),
-			'pages' => helpers::pages()
+			'categories' => article::categories(),
+			'pages' => helpers::pages(),
 		)
 	);
 });
@@ -38,6 +39,22 @@ Route::get('(:any)/(:any)/(:any)/(:any)', function($year=false,$month=false,$day
 		return $view;
 	}
 	return Response::error('404');
+});
+
+/**
+* Category
+*/
+Route::get('category/(:any)', function($cat = null)
+{
+	return View::make(Config::get('kudos.theme').'.layout')
+		->with('description', '')
+		->with('keywords', '')
+		->nest('body', Config::get('kudos.theme').'.partials.home', array(
+			'articles' => article::search('category', $cat),
+			'category' => $cat,
+			'pages' => helpers::pages()
+		)
+	);
 });
 
 /**

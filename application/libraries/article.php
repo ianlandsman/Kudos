@@ -1,6 +1,8 @@
 <?php
 class Article {
 
+	protected static $articles = array();
+
 	protected static function path($path = '')
 	{
 		if ( ! is_file($path))
@@ -88,26 +90,71 @@ class Article {
 		return $data;
 	}
 
+	public static function all()
+	{
+		if (static::$articles)
+		{
+			return static::$articles;
+		}
+
+		// Get all the articles
+		$all = glob(Config::get('kudos.content_path')."/published/*".Config::get('kudos.markdown_extension'));
+		// Sort them newest to oldest
+		rsort($all);
+		foreach ($all as $path)
+		{
+			$articles[] = static::parse($path);
+		}
+		return static::$articles = $articles;
+	}
+
 	public static function get($count = '*')
 	{
-		// Get all the articles
-		$articles = glob(Config::get('kudos.content_path')."/published/*".Config::get('kudos.markdown_extension'));
-
-		if ($articles)
+		if ( ! $articles = static::all())
 		{
-			// Sort them newest to oldest
-			rsort($articles);
-
-			// Are we limiting? If not let's just give them a set number
-			if ($count == '*') $count = 25;
-
-			// bug in paging?
-			$sliced = array_slice($articles, Input::get('page', 1)-1, $count);
-			foreach ($sliced as $path)
-			{
-				$article[] = static::parse($path);
-			}
-			return Paginator::make($article, count($articles), $count);
+			return null;
 		}
+
+		// Are we limiting? If not let's just give them a set number
+		if ($count == '*') $count = 25;
+
+		// bug in paging?
+		$articles = array_slice($articles, Input::get('page', 1)-1, $count);
+		return Paginator::make($articles, count($articles), $count);
+	}
+
+	public static function search($key = '', $value = '', $limit = 10)
+	{
+		if ( ! $articles = static::all())
+		{
+			return null;
+		}
+
+		// bug in paging?
+		$sliced = array_slice($articles, Input::get('page', 1)-1, $limit);
+		foreach ($sliced as $path)
+		{
+			$article = static::parse($path);
+			if (strtolower($article[$key]) == strtolower($value))
+			{
+				$results[] = $article;
+			}
+		}
+		return Paginator::make($results, count($results), $limit);
+	}
+
+	public static function categories()
+	{
+		if ( ! $articles = static::all())
+		{
+			return null;
+		}
+
+		$categories = array();
+		foreach ($articles as $article)
+		{
+			$categories = array_merge($categories, array($article['category']));
+		}
+		return $categories;
 	}
 }

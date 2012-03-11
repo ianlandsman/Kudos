@@ -52,13 +52,13 @@ Currently Kudos doesn't handle media. I'd recommend just using public dropbox fo
 
 ## WIP
 
-You can now define tags in the top of posts. Here is an example:
+You can now define keys and values in the top of posts. Here is an example:
 
 ```md
-Tags: tag1, tag2
 Type: link
 Keywords: test, test
 Description: My fancy description
+Category: mycategory
 
 # Title
 
@@ -70,6 +70,5 @@ The top part is returned to the view as a key => value. So with this example you
 	{{$type}}
 	{{$keywords}}
 	{{$description}}
+	{{$category}}
 
-
-Tags are special in that are converted into an array.
