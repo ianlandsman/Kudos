@@ -14,8 +14,8 @@
 			<description>
 			{{$article['body']}}
 			</description>
-			<link>{{$article['url']}}</link>
-			<guid isPermaLink="true">{{$article['url']}}</guid>
+			<link>{{$article['permalink']}}</link>
+			<guid isPermaLink="true">{{$article['permalink']}}</guid>
 			<pubDate>{{date(DATE_RSS, $article['date'])}}</pubDate>
 		</item>
 	@endforeach

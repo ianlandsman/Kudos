@@ -6,16 +6,9 @@
 	</div>
 @endif
 
-<article class="article {{isset($type) ? $type : ''}}">
+<article class="article">
 
 	{{$body}}
-
-	@if (isset($tags))
-		Tagged:
-		@foreach ($tags as $tag)
-			{{$tag}},
-		@endforeach
-	@endif
 
 	@if (Config::get('kudos.disqus_shortname'))
 		{{View::make('partials.disqus')}}

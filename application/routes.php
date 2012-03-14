@@ -11,7 +11,7 @@ Route::get('/', function()
 		->with('description', '')
 		->with('keywords', '')
 		->nest('body', Config::get('kudos.theme').'.partials.home', array(
-			'articles' => article::get('*'),
+			'articles' => article::get(10),
 			'categories' => article::categories(),
 			'pages' => helpers::pages(),
 		)
@@ -30,6 +30,7 @@ Route::get('(:any)/(:any)/(:any)/(:any)', function($year=false,$month=false,$day
 		$description = (isset($data['description'])) ? $data['description'] : '';
 		$keywords = (isset($data['keywords'])) ? $data['keywords'] : '';
 
+		$data['article'] = $data;
 		$view = View::make(Config::get('kudos.theme').'.layout')
 			->with('title', $data['title'] . ' :: ')
 			->with('description', $description)
@@ -91,7 +92,8 @@ Route::get('page/(:any)', function($page=false)
 {
 	if ($page && file_exists($path = Config::get('kudos.content_path').'/pages/'.$page.Config::get('kudos.markdown_extension')))
 	{
-		return View::make(Config::get('kudos.theme').'.layout', array('title' => helpers::unslug($page) . ' :: '))
+		return View::make(Config::get('kudos.theme').'.layout',
+			array('title' => helpers::unslug($page) . ' :: ', 'keywords' => '', 'description' => ''))
 			->nest('body', Config::get('kudos.theme').'.partials.article', array('body'=>helpers::markdown_file($path)));
 	}
 	return Response::error('404');
@@ -105,7 +107,7 @@ Route::get('archive', function()
 	return View::make(Config::get('kudos.theme').'.layout', array('title' => 'Archive :: '))
 		->with('description', '')
 		->with('keywords', '')
-		->nest('body', Config::get('kudos.theme').'.partials.archive', array('articles' => article::get('*')));
+		->nest('body', Config::get('kudos.theme').'.partials.archive', array('articles' => article::get(50)));
 });
 
 /**

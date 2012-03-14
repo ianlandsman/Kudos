@@ -6,7 +6,7 @@
 		@foreach ($articles->results AS $article)
 			<li>
 				<span class="date">{{date('Y-m-d', $article['date'])}}</span> -
-				<a href="{{$article['url']}}">{{$article['title']}}</a>
+				<a href="{{$article['permalink']}}">{{$article['title']}}</a>
 			</li>
 		@endforeach
 	</ul>
