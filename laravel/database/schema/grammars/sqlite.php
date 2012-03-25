@@ -113,7 +113,7 @@ class SQLite extends Grammar {
 	 */
 	protected function nullable(Table $table, Fluent $column)
 	{
-		return ($column->nullable) ? ' NULL' : ' NOT NULL';
+		return ' NULL';
 	}
 
 	/**
@@ -278,6 +278,17 @@ class SQLite extends Grammar {
 	 * @return string
 	 */
 	protected function type_float(Fluent $column)
+	{
+		return 'FLOAT';
+	}
+
+	/**
+	 * Generate the data-type definintion for a decimal.
+	 *
+	 * @param  Fluent  $column
+	 * @return string
+	 */
+	protected function type_decimal(Fluent $column)
 	{
 		return 'FLOAT';
 	}

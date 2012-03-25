@@ -365,14 +365,30 @@ function str_finish($value, $cap)
  * Get the root namespace of a given class.
  *
  * @param  string  $class
+ * @param  string  $separator
  * @return string
  */
-function root_namespace($class)
+function root_namespace($class, $separator = '\\')
 {
-	if (str_contains($class, '\\'))
+	if (str_contains($class, $separator))
 	{
-		return head(explode('\\', $class));
+		return head(explode($separator, $class));
 	}
+}
+
+/**
+ * Get the "class basename" of a class or object.
+ *
+ * The basename is considered the name of the class minus all namespaces.
+ *
+ * @param  object|string  $class
+ * @return string
+ */
+function class_basename($class)
+{
+	if (is_object($class)) $class = get_class($class);
+
+	return basename(str_replace('\\', '/', $class));
 }
 
 /**
@@ -408,4 +424,57 @@ function with($object)
 function has_php($version)
 {
 	return version_compare(PHP_VERSION, $version) >= 0;
+}
+
+/**
+ * Get a view instance.
+ *
+ * @param  string  $view
+ * @param  array   $data
+ * @return View
+ */
+function view($view, $data = array())
+{
+	if (is_null($view)) return '';
+
+	return Laravel\View::make($view, $data);
+}
+
+/**
+ * Render the given view.
+ *
+ * @param  string  $view
+ * @param  array   $data
+ * @return string
+ */
+function render($view, $data = array())
+{
+	if (is_null($view)) return '';
+
+	return Laravel\View::make($view, $data)->render();
+}
+
+/**
+ * Get the rendered contents of a partial from a loop.
+ *
+ * @param  string  $view
+ * @param  array   $data
+ * @param  string  $iterator
+ * @param  string  $empty
+ * @return string
+ */
+function render_each($partial, array $data, $iterator, $empty = 'raw|')
+{
+	return Laravel\View::render_each($partial, $data, $iterator, $empty);
+}
+
+/**
+ * Get the string contents of a section.
+ *
+ * @param  string  $section
+ * @return string
+ */
+function yield($section)
+{
+	return Laravel\Section::yield($section);
 }

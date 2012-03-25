@@ -3,6 +3,25 @@
 class HTML {
 
 	/**
+	 * The registered custom macros.
+	 *
+	 * @var array
+	 */
+	public static $macros = array();
+
+    /**
+     * Registers a custom macro.
+     *
+     * @param  string   $name
+     * @param  Closure  $input
+     * @return void
+     */
+	public static function macro($name, $macro)
+	{
+		static::$macros[$name] = $macro;
+	}
+
+	/**
 	 * Convert HTML characters to entities.
 	 *
 	 * The encoding specified in the application configuration file will be used.
@@ -181,6 +200,30 @@ class HTML {
 	}
 
 	/**
+	 * Generate an HTML link to a controller action.
+	 *
+	 * An array of parameters may be specified to fill in URI segment wildcards.
+	 *
+	 * <code>
+	 *		// Generate a link to the "home@index" action
+	 *		echo HTML::link_to_action('home@index', 'Home');
+	 *
+	 *		// Generate a link to the "user@profile" route and add some parameters
+	 *		echo HTML::link_to_action('user@profile', 'Profile', array('taylor'));
+	 * </code>
+	 *
+	 * @param  string  $action
+	 * @param  string  $title
+	 * @param  array   $parameters
+	 * @param  array   $attributes
+	 * @return string
+	 */
+	public static function link_to_action($action, $title, $parameters = array(), $attributes = array())
+	{
+		return static::link(URL::to_action($action, $parameters), $title, $attributes);
+	}
+
+	/**
 	 * Generate an HTML mailto link.
 	 *
 	 * The E-Mail address will be obfuscated to protect it from spam bots.
@@ -295,7 +338,7 @@ class HTML {
 		{
 			// For numeric keys, we will assume that the key and the value are the
 			// same, as this will conver HTML attributes such as "required" that
-			// may be specified as required="required".
+			// may be specified as required="required", etc.
 			if (is_numeric($key)) $key = $value;
 
 			if ( ! is_null($value))
@@ -321,8 +364,7 @@ class HTML {
 		{
 			// To properly obfuscate the value, we will randomly convert each
 			// letter to its entity or hexadecimal representation, keeping a
-			// bot from sniffing the randomly obfuscated letters from the
-			// page and guarding against e-mail harvesting.
+			// bot from sniffing the randomly obfuscated letters.
 			switch (rand(1, 3))
 			{
 				case 1:
@@ -339,6 +381,23 @@ class HTML {
 		}
 
 		return $safe;
+	}
+
+	/**
+	 * Dynamically handle calls to custom macros.
+	 *
+	 * @param  string  $method
+	 * @param  array   $parameters
+	 * @return mixed
+	 */
+	public static function __callStatic($method, $parameters)
+	{
+	    if (isset(static::$macros[$method]))
+	    {
+	        return call_user_func_array(static::$macros[$method], $parameters);
+	    }
+	    
+	    throw new \Exception("Method [$method] does not exist.");
 	}
 
 }
