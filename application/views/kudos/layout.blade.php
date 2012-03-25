@@ -1,4 +1,3 @@
-<?php defined('DS') or die('No direct script access.'); ?>
 <!doctype html>
 <head>
 	<meta charset="utf-8">
@@ -8,8 +7,8 @@
 	<title>{{Config::get('kudos.site_name')}}</title>
 	@endif
 
-	<meta name="keywords" content="{{$keywords}}">
-	<meta name="description" content="{{$description}}">
+	<meta name="keywords" content="{{ isset($keywords) ? $keywords : '' }}">
+	<meta name="keywords" content="{{ isset($description) ? $description : '' }}">
 
 	<!-- Google Fonts -->
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700' rel='stylesheet' type='text/css'>
@@ -26,7 +25,9 @@
 	<header>
 		<a href="{{URL::to()}}">{{Config::get('kudos.site_name')}}</a>
 	</header>
-	{{$body}}
+	@yield('content')
+
+	@yield('else')
 	<footer>
 		<p>
 			<small>&copy; Copyright {{date('Y')}}. All Rights Reserved.</small>

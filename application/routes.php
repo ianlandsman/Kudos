@@ -7,15 +7,12 @@ use Laravel\Routing;
 */
 Route::get('/', function()
 {
-	return View::make(Config::get('kudos.theme').'.layout')
+	return View::make(Config::get('kudos.theme').'.partials.home')
 		->with('description', '')
 		->with('keywords', '')
-		->nest('body', Config::get('kudos.theme').'.partials.home', array(
-			'articles' => article::get(10),
-			'categories' => article::categories(),
-			'pages' => helpers::pages(),
-		)
-	);
+		->with('articles', article::get(10))
+		->with('categories', article::categories())
+		->with('pages', helpers::pages());
 });
 
 /**
@@ -31,11 +28,11 @@ Route::get('(:any)/(:any)/(:any)/(:any)', function($year=false,$month=false,$day
 		$keywords = (isset($data['keywords'])) ? $data['keywords'] : '';
 
 		$data['article'] = $data;
-		$view = View::make(Config::get('kudos.theme').'.layout')
+		$view = View::make(Config::get('kudos.theme').'.partials.article')
 			->with('title', $data['title'] . ' :: ')
 			->with('description', $description)
 			->with('keywords', $keywords)
-			->nest('body', Config::get('kudos.theme').'.partials.article', $data);
+			->with($data);
 
 		return $view;
 	}
@@ -47,15 +44,12 @@ Route::get('(:any)/(:any)/(:any)/(:any)', function($year=false,$month=false,$day
 */
 Route::get('category/(:any)', function($cat = null)
 {
-	return View::make(Config::get('kudos.theme').'.layout')
+	return View::make(Config::get('kudos.theme').'.partials.home')
 		->with('description', '')
 		->with('keywords', '')
-		->nest('body', Config::get('kudos.theme').'.partials.home', array(
-			'articles' => article::search('category', $cat),
-			'category' => $cat,
-			'pages' => helpers::pages()
-		)
-	);
+		->with('articles', article::search('category', $cat))
+		->with('category', $cat)
+		->with('pages', helpers::pages());
 });
 
 /**
@@ -66,11 +60,12 @@ Route::get('draft/(:any)', function($article=false)
 {
 	if ($article && file_exists($path = Config::get('kudos.content_path')."/drafts/{$article}".Config::get('kudos.markdown_extension')))
 	{
-		return View::make(Config::get('kudos.theme').'.layout')
+		return View::make(Config::get('kudos.theme').'.partials.article')
 			->with('description', '')
 			->with('keywords', '')
 			->with('title', helpers::unslug($article) . ' :: ')
-			->nest('body', Config::get('kudos.theme').'.partials.article', array('body'=>helpers::markdown_file($path), 'draft' => true));
+			->with('body', helpers::markdown_file($path))
+			->with('draft', true);
 	}
 	return Response::error('404');
 });
@@ -80,8 +75,8 @@ Route::get('draft/(:any)', function($article=false)
 */
 Route::get('page', function()
 {
-	return View::make(Config::get('kudos.theme').'.layout')
-		->nest('body', Config::get('kudos.theme').'.partials.pages', array('pages'=>helpers::pages()));
+	return View::make(Config::get('kudos.theme').'.partials.pages')
+		->with('pages', helpers::pages());
 });
 
 /**
@@ -92,9 +87,11 @@ Route::get('page/(:any)', function($page=false)
 {
 	if ($page && file_exists($path = Config::get('kudos.content_path').'/pages/'.$page.Config::get('kudos.markdown_extension')))
 	{
-		return View::make(Config::get('kudos.theme').'.layout',
-			array('title' => helpers::unslug($page) . ' :: ', 'keywords' => '', 'description' => ''))
-			->nest('body', Config::get('kudos.theme').'.partials.article', array('body'=>helpers::markdown_file($path)));
+		return View::make(Config::get('kudos.theme').'.partials.article')
+			->with('title', helpers::unslug($page) . ' :: ')
+			->with('keywords', '')
+			->with('description', '')
+			->with('body', helpers::markdown_file($path));
 	}
 	return Response::error('404');
 });
@@ -104,10 +101,11 @@ Route::get('page/(:any)', function($page=false)
 */
 Route::get('archive', function()
 {
-	return View::make(Config::get('kudos.theme').'.layout', array('title' => 'Archive :: '))
+	return View::make(Config::get('kudos.theme').'.partials.archive')
+		->with('title', 'Archive :: ')
 		->with('description', '')
 		->with('keywords', '')
-		->nest('body', Config::get('kudos.theme').'.partials.archive', array('articles' => article::get(50)));
+		->with('articles', article::get(50));
 });
 
 /**
