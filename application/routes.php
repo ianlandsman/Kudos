@@ -70,7 +70,7 @@ Route::get('archive', function()
 */
 Route::get('rss', function()
 {
-	return Response::make(View::make('rss')->with('articles', helpers::articles(20)), 200, array("Content-Type"=>"application/rss+xml"));
+	return Response::make(View::make('rss')->with('articles', helpers::articles(20)), 200, array("Content-Type"=>"text/xml"));
 });
 
 /**
