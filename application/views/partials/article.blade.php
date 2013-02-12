@@ -6,6 +6,12 @@
 	</div>
 @endif
 
+@if (Config::has('kudos.ad'))
+    <article class="ad_space">
+        {{helpers::markdown(Config::get('kudos.ad'))}}
+    </article>
+@endif
+
 <article class="article">
 	{{$body}}
 
